@@ -1,0 +1,3383 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Pirate Recount Quest - MPI Bahasa Inggris Kelas 8 (Recount & Past Tense)</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --wood-dark: #4a2c11;
+      --wood-mid: #7c4a1e;
+      --wood-light: #b87333;
+      --parchment: #fdf5e6;
+      --parchment-dark: #f3e2c3;
+      --gold: #fbbf24;
+      --sea-deep: #0c4a6e;
+      --sea-mid: #0284c7;
+    }
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(180deg, #082f49 0%, #0369a1 50%, #075985 100%);
+      color: #1e293b;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+    h1, h2, h3, .font-pirate {
+      font-family: 'Fredoka', sans-serif;
+      letter-spacing: 0.02em;
+    }
+    .wood-panel {
+      background: linear-gradient(180deg, #78350f 0%, #451a03 100%);
+      border: 4px solid #b45309;
+      box-shadow: 0 8px 0 #270e01, inset 0 2px 0 rgba(255,255,255,0.2);
+    }
+    .parchment-card {
+      background: linear-gradient(180deg, #fffbeb 0%, #fef3c7 100%);
+      border: 4px solid #d97706;
+      box-shadow: 0 6px 0 #92400e, 0 12px 20px rgba(0,0,0,0.35);
+    }
+    .pirate-btn {
+      transition: transform 0.12s ease, box-shadow 0.12s ease;
+      box-shadow: 0 5px 0 rgba(0,0,0,0.45);
+      touch-action: manipulation;
+    }
+    .pirate-btn:active {
+      transform: translateY(4px);
+      box-shadow: 0 1px 0 rgba(0,0,0,0.45);
+    }
+    .floating-anim {
+      animation: floatShip 3s ease-in-out infinite;
+    }
+    @keyframes floatShip {
+      0%, 100% { transform: translateY(0px) rotate(-1deg); }
+      50% { transform: translateY(-7px) rotate(1.5deg); }
+    }
+    .pulse-gold {
+      animation: pulseGold 2s infinite;
+    }
+    @keyframes pulseGold {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.7); }
+      50% { box-shadow: 0 0 0 10px rgba(251, 191, 36, 0); }
+    }
+    .flip-card {
+      perspective: 1000px;
+    }
+    .flip-inner {
+      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      transform-style: preserve-3d;
+    }
+    .flip-card.flipped .flip-inner {
+      transform: rotateY(180deg);
+    }
+    .flip-front, .flip-back {
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+    .flip-back {
+      transform: rotateY(180deg);
+    }
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #082f49;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #f59e0b;
+      border-radius: 9999px;
+    }
+    input, textarea, select {
+      user-select: text;
+    }
+    /* IFP Widescreen (16:9 Smartboard) Optimizations */
+    body.ifp-large-text {
+      font-size: 112%;
+    }
+    @media (min-width: 1280px) {
+      .ifp-container {
+        max-width: 1780px;
+      }
+      .ifp-card-pad {
+        padding: 1.5rem 2rem;
+      }
+      .ifp-btn-touch {
+        min-height: 52px;
+      }
+    }
+  </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+  <!-- TOP PIRATE HUD BAR (OPTIMIZED FOR 16:9 IFP SMARTBOARD) -->
+  <header id="hudBar" class="hidden sticky top-0 z-40 wood-panel text-amber-50 px-3 py-2.5 sm:px-6">
+    <div class="w-full ifp-container mx-auto flex flex-wrap items-center justify-between gap-2.5">
+      <!-- Player Info -->
+      <div class="flex items-center gap-2.5">
+        <button id="btnMapHome" class="pirate-btn bg-amber-500 hover:bg-amber-400 text-amber-950 font-pirate font-bold px-3 py-1.5 rounded-xl flex items-center gap-1.5 text-sm sm:text-base" title="Kembali ke Peta Petualangan">
+          <span>🗺️</span>
+          <span>Peta Pulau</span>
+        </button>
+        <div class="flex items-center gap-2 bg-amber-950/80 border-2 border-amber-600/80 px-2.5 py-1 rounded-xl">
+          <div id="hudAvatar" class="w-8 h-8 rounded-lg bg-amber-200 flex items-center justify-center text-lg">🏴‍☠️</div>
+          <div class="leading-tight">
+            <div id="hudName" class="font-pirate font-bold text-amber-300 text-xs sm:text-sm truncate max-w-[120px] sm:max-w-[180px]">Capt. Student</div>
+            <div id="hudClass" class="text-[11px] text-amber-100/80">Kelas 8A</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Level Progress Pills -->
+      <div class="hidden md:flex items-center gap-1.5 bg-amber-950/70 px-3 py-1 rounded-xl border border-amber-700/60">
+        <button data-goto-level="1" class="hud-lvl-btn px-2.5 py-1 rounded-lg text-xs font-pirate font-semibold bg-amber-800/70 text-amber-200 hover:bg-amber-600 transition">1. Past Tense</button>
+        <span class="text-amber-500">⚓</span>
+        <button data-goto-level="2" class="hud-lvl-btn px-2.5 py-1 rounded-lg text-xs font-pirate font-semibold bg-amber-800/70 text-amber-200 hover:bg-amber-600 transition">2. Recount</button>
+        <span class="text-amber-500">⚓</span>
+        <button data-goto-level="3" class="hud-lvl-btn px-2.5 py-1 rounded-lg text-xs font-pirate font-semibold bg-amber-800/70 text-amber-200 hover:bg-amber-600 transition">3. Cannon Battle</button>
+        <span class="text-amber-500">⚓</span>
+        <button data-goto-level="4" class="hud-lvl-btn px-2.5 py-1 rounded-lg text-xs font-pirate font-semibold bg-amber-800/70 text-amber-200 hover:bg-amber-600 transition">4. Kraken Escape</button>
+        <span class="text-amber-500">⚓</span>
+        <button data-goto-level="5" class="hud-lvl-btn px-2.5 py-1 rounded-lg text-xs font-pirate font-semibold bg-amber-800/70 text-amber-200 hover:bg-amber-600 transition">5. Refleksi</button>
+      </div>
+
+      <!-- Score & Audio Controls -->
+      <div class="flex items-center gap-2">
+        <div class="flex items-center gap-1.5 bg-amber-950/90 border-2 border-amber-500 px-3 py-1 rounded-xl">
+          <span class="text-base">🪙</span>
+          <span id="hudCoins" class="font-pirate font-bold text-amber-300 text-sm sm:text-base">0</span>
+        </div>
+        <div class="flex items-center gap-1.5 bg-amber-950/90 border-2 border-sky-400 px-2.5 py-1 rounded-xl" title="Level Selesai">
+          <span class="text-base">⭐</span>
+          <span id="hudStars" class="font-pirate font-bold text-sky-300 text-sm sm:text-base">0/5</span>
+        </div>
+        <button id="btnToggleBgm" class="pirate-btn bg-emerald-600 hover:bg-emerald-500 text-white px-2.5 py-1.5 rounded-xl text-xs sm:text-sm font-pirate font-semibold flex items-center gap-1" title="Musik Latar Bajak Laut">
+          <span id="bgmIcon">🎵</span>
+          <span class="hidden sm:inline" id="bgmLabel">BGM On</span>
+        </button>
+        <button id="btnToggleSfx" class="pirate-btn bg-sky-600 hover:bg-sky-500 text-white px-2.5 py-1.5 rounded-xl text-xs sm:text-sm font-pirate font-semibold flex items-center gap-1" title="Efek Suara Game">
+          <span id="sfxIcon">🔊</span>
+          <span class="hidden sm:inline" id="sfxLabel">SFX On</span>
+        </button>
+        <button id="btnVocabModal" class="pirate-btn bg-purple-600 hover:bg-purple-500 text-white px-3 py-1.5 rounded-xl text-xs sm:text-sm font-pirate font-semibold flex items-center gap-1" title="Kamus Saku Bajak Laut (A1)">
+          <span>📖</span>
+          <span class="hidden sm:inline">Kamus A1</span>
+        </button>
+        <button id="btnIfpZoom" type="button" class="pirate-btn bg-amber-600 hover:bg-amber-500 text-white px-3 py-1.5 rounded-xl text-xs sm:text-sm font-pirate font-semibold flex items-center gap-1" title="Perbesar Teks untuk Layar IFP Kelas">
+          <span>🔍</span>
+          <span class="hidden xl:inline" id="ifpZoomLabel">Mode IFP+</span>
+        </button>
+        <button id="btnFullscreen" type="button" class="pirate-btn bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-xl text-xs sm:text-sm font-pirate font-semibold flex items-center gap-1" title="Layar Penuh IFP (Fullscreen)">
+          <span id="fsIcon">⛶</span>
+          <span class="hidden xl:inline" id="fsLabel">Layar Penuh</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER (16:9 WIDESCREEN IFP SMARTBOARD LAYOUT) -->
+  <main class="flex-1 flex flex-col justify-center items-center p-2.5 sm:p-5 w-full ifp-container mx-auto">
+
+    <!-- ========================================== -->
+    <!-- SCREEN 0: LOGIN & SHIP BOARDING (16:9 IFP) -->
+    <!-- ========================================== -->
+    <section id="screenLogin" class="w-full my-auto">
+      <div class="parchment-card rounded-3xl p-4 sm:p-6 lg:p-8 relative overflow-hidden">
+        <!-- Top IFP Header Bar -->
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-4 border-b-2 border-amber-400/80 pb-3">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="inline-flex items-center gap-1.5 bg-amber-800 text-amber-100 text-xs sm:text-sm font-pirate font-semibold px-3.5 py-1 rounded-full">
+              ⚓ Bahasa Inggris SMP Kelas 8 • Level A1
+            </span>
+            <span class="inline-flex items-center gap-1.5 bg-sky-700 text-white text-xs sm:text-sm font-pirate font-semibold px-3.5 py-1 rounded-full">
+              🖥️ Mode Layar Sentuh IFP (Interactive Flat Panel)
+            </span>
+          </div>
+          <div class="flex items-center gap-2">
+            <button id="btnLoginFullscreen" type="button" class="pirate-btn bg-indigo-600 hover:bg-indigo-500 text-white font-pirate font-bold text-xs sm:text-sm px-3.5 py-1.5 rounded-xl flex items-center gap-1.5">
+              <span>⛶</span>
+              <span>Layar Penuh IFP (16:9)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 16:9 Widescreen 2-Column Grid for IFP -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-7 items-stretch">
+          <!-- Left Column (5 cols): Hero Banner with Animated Pirate Ship SVG & Audio Test -->
+          <div class="lg:col-span-5 bg-gradient-to-b from-sky-800 via-sky-600 to-sky-900 rounded-2xl p-5 sm:p-6 text-center text-white border-4 border-amber-700 flex flex-col justify-between relative overflow-hidden">
+            <div class="my-auto">
+              <div class="floating-anim inline-block mb-3">
+                <!-- Custom Pirate Ship & Compass SVG Icon -->
+                <svg class="w-28 h-28 sm:w-36 sm:h-36 mx-auto drop-shadow-lg" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="60" cy="60" r="52" fill="#0284c7" stroke="#fbbf24" stroke-width="4" stroke-dasharray="6 4"/>
+                  <rect x="57" y="18" width="6" height="62" rx="2" fill="#78350f"/>
+                  <path d="M60 18 L92 25 L60 33 Z" fill="#1e293b"/>
+                  <circle cx="72" cy="25.5" r="3" fill="#ffffff"/>
+                  <path d="M30 34 C48 28, 72 28, 90 34 C95 48, 92 60, 86 68 L34 68 C28 60, 25 48, 30 34 Z" fill="#fef3c7" stroke="#d97706" stroke-width="2.5"/>
+                  <path d="M48 31 L45 68 M72 31 L75 68" stroke="#ef4444" stroke-width="4" stroke-linecap="round"/>
+                  <circle cx="60" cy="49" r="7" fill="#78350f"/>
+                  <circle cx="57.5" cy="48" r="1.8" fill="#fef3c7"/>
+                  <circle cx="62.5" cy="48" r="1.8" fill="#fef3c7"/>
+                  <path d="M20 72 L100 72 L86 94 L34 94 Z" fill="#78350f" stroke="#451a03" stroke-width="3"/>
+                  <circle cx="45" cy="82" r="3.5" fill="#fbbf24"/>
+                  <circle cx="60" cy="82" r="3.5" fill="#fbbf24"/>
+                  <circle cx="75" cy="82" r="3.5" fill="#fbbf24"/>
+                  <path d="M14 95 Q30 88 45 95 T75 95 T106 95" stroke="#38bdf8" stroke-width="5" stroke-linecap="round" fill="none"/>
+                </svg>
+              </div>
+              <h1 class="text-2xl sm:text-4xl font-pirate font-bold text-amber-300 drop-shadow">
+                PIRATE RECOUNT QUEST
+              </h1>
+              <p class="text-sky-100 text-sm sm:text-base mt-2 max-w-md mx-auto leading-relaxed">
+                Media Pembelajaran Interaktif <strong>Simple Past Tense</strong> &amp; <strong>Recount Text</strong> (Kosakata Level A1)
+              </p>
+              <div class="grid grid-cols-3 gap-2 mt-4 text-xs font-pirate text-amber-200">
+                <div class="bg-sky-950/70 p-2 rounded-xl border border-sky-400/40">🏝️ 5 Pulau Misi</div>
+                <div class="bg-sky-950/70 p-2 rounded-xl border border-sky-400/40">🖐️ Multi-Touch</div>
+                <div class="bg-sky-950/70 p-2 rounded-xl border border-sky-400/40">🔊 Audio &amp; Game</div>
+              </div>
+            </div>
+
+            <!-- Audio Test inside Left Hero Panel -->
+            <div class="mt-4 bg-sky-950/80 border-2 border-amber-400 rounded-2xl p-3 flex flex-wrap items-center justify-between gap-2">
+              <span class="text-xs sm:text-sm font-pirate font-bold text-amber-200">🔊 Tes Speaker IFP Kelas:</span>
+              <button id="btnTestAudioLogin" type="button" class="pirate-btn bg-amber-400 hover:bg-amber-300 text-amber-950 font-pirate font-bold text-xs sm:text-sm px-4 py-2 rounded-xl flex items-center gap-1.5">
+                <span>🦜</span>
+                <span>Tes Suara Kapten (Klik di Sini)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Right Column (7 cols): Login Form + IFP Touch Keyboard + Class 8A-8H + Avatars -->
+          <div class="lg:col-span-7 flex flex-col justify-between space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <div class="flex items-center justify-between mb-1">
+                  <label for="inputStudentName" class="block font-pirate font-bold text-amber-950 text-sm sm:text-base">
+                    🧑‍✈️ Nama Kapten:
+                  </label>
+                  <button id="btnToggleTouchKb" type="button" class="text-xs font-pirate font-bold bg-amber-200 hover:bg-amber-300 text-amber-950 px-2.5 py-1 rounded-lg border border-amber-500">
+                    ⌨️ Keyboard Layar IFP
+                  </button>
+                </div>
+                <input id="inputStudentName" type="text" placeholder="Sentuh & ketik namamu..." maxlength="35"
+                  class="w-full px-4 py-3 rounded-xl border-3 border-amber-600 bg-white text-slate-900 font-bold text-base sm:text-lg focus:outline-none focus:ring-4 focus:ring-amber-400" />
+              </div>
+            <div>
+              <label for="selectClassPreset" class="block font-pirate font-bold text-amber-950 text-sm sm:text-base mb-1">
+                🏫 Pilih Kelas (8A – 8H):
+              </label>
+              <select id="selectClassPreset" class="w-full px-4 py-3 rounded-xl border-3 border-amber-600 bg-amber-100 text-amber-950 font-pirate font-bold text-base focus:outline-none focus:ring-4 focus:ring-amber-400 cursor-pointer">
+                <option value="8A">Kelas 8A</option>
+                <option value="8B">Kelas 8B</option>
+                <option value="8C">Kelas 8C</option>
+                <option value="8D">Kelas 8D</option>
+                <option value="8E">Kelas 8E</option>
+                <option value="8F">Kelas 8F</option>
+                <option value="8G">Kelas 8G</option>
+                <option value="8H">Kelas 8H</option>
+              </select>
+              <div class="grid grid-cols-4 gap-1.5 mt-2" id="classQuickButtons">
+                <button type="button" data-class-val="8A" class="class-pill-btn pirate-btn py-1.5 rounded-lg font-pirate font-bold text-xs bg-amber-500 text-amber-950 border-2 border-amber-800">8A</button>
+                <button type="button" data-class-val="8B" class="class-pill-btn pirate-btn py-1.5 rounded-lg font-pirate font-bold text-xs bg-white text-amber-950 border-2 border-amber-400">8B</button>
+                <button type="button" data-class-val="8C" class="class-pill-btn pirate-btn py-1.5 rounded-lg font-pirate font-bold text-xs bg-white text-amber-950 border-2 border-amber-400">8C</button>
+                <button type="button" data-class-val="8D" class="class-pill-btn pirate-btn py-1.5 rounded-lg font-pirate font-bold text-xs bg-white text-amber-950 border-2 border-amber-400">8D</button>
+                <button type="button" data-class-val="8E" class="class-pill-btn pirate-btn py-1.5 rounded-lg font-pirate font-bold text-xs bg-white text-amber-950 border-2 border-amber-400">8E</button>
+                <button type="button" data-class-val="8F" class="class-pill-btn pirate-btn py-1.5 rounded-lg font-pirate font-bold text-xs bg-white text-amber-950 border-2 border-amber-400">8F</button>
+                <button type="button" data-class-val="8G" class="class-pill-btn pirate-btn py-1.5 rounded-lg font-pirate font-bold text-xs bg-white text-amber-950 border-2 border-amber-400">8G</button>
+                <button type="button" data-class-val="8H" class="class-pill-btn pirate-btn py-1.5 rounded-lg font-pirate font-bold text-xs bg-white text-amber-950 border-2 border-amber-400">8H</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Choose Pirate Avatar -->
+          <div>
+            <label class="block font-pirate font-bold text-amber-950 text-sm sm:text-base mb-2">
+              🦜 Pilih Karakter Bajak Lautmu (Sentuh untuk Memilih):
+            </label>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5" id="avatarGrid">
+              <button type="button" data-avatar="🏴‍☠️" data-title="Capt. Redbeard" class="avatar-choice pirate-btn p-3 rounded-2xl border-3 border-amber-600 bg-amber-200 flex flex-col items-center gap-1 ring-4 ring-amber-500">
+                <span class="text-3xl">🏴‍☠️</span>
+                <span class="font-pirate font-bold text-xs text-amber-950">Capt. Jack</span>
+                <span class="text-[11px] text-amber-800">Pemberani</span>
+              </button>
+              <button type="button" data-avatar="🧭" data-title="Navigator Maya" class="avatar-choice pirate-btn p-3 rounded-2xl border-3 border-amber-300 bg-white flex flex-col items-center gap-1">
+                <span class="text-3xl">🧭</span>
+                <span class="font-pirate font-bold text-xs text-amber-950">Navigator Maya</span>
+                <span class="text-[11px] text-amber-800">Penjelajah</span>
+              </button>
+              <button type="button" data-avatar="🦜" data-title="Gunner Leo" class="avatar-choice pirate-btn p-3 rounded-2xl border-3 border-amber-300 bg-white flex flex-col items-center gap-1">
+                <span class="text-3xl">🦜</span>
+                <span class="font-pirate font-bold text-xs text-amber-950">First Mate Leo</span>
+                <span class="text-[11px] text-amber-800">Cerdas</span>
+              </button>
+              <button type="button" data-avatar="⚓" data-title="Explorer Sinta" class="avatar-choice pirate-btn p-3 rounded-2xl border-3 border-amber-300 bg-white flex flex-col items-center gap-1">
+                <span class="text-3xl">⚓</span>
+                <span class="font-pirate font-bold text-xs text-amber-950">Capt. Sinta</span>
+                <span class="text-[11px] text-amber-800">Kreatif</span>
+              </button>
+            </div>
+          </div>
+
+          <div id="loginErrorMsg" class="hidden bg-red-100 border-2 border-red-500 text-red-800 px-4 py-2.5 rounded-xl text-sm font-semibold">
+            ⚠️ Harap isi Nama Kapten terlebih dahulu sebelum berlayar!
+          </div>
+
+            <!-- Built-in On-Screen Touch Keyboard for School IFP -->
+            <div id="ifpTouchKeyboard" class="hidden bg-amber-950/95 border-2 border-amber-500 rounded-2xl p-2.5 space-y-1.5">
+              <div class="flex items-center justify-between text-xs text-amber-200 font-pirate px-1">
+                <span>⌨️ Papan Ketik Sentuh IFP (Ketuk huruf untuk mengisi Nama Kapten):</span>
+                <button id="btnCloseTouchKb" type="button" class="text-amber-300 hover:text-white font-bold px-2">✕ Tutup</button>
+              </div>
+              <div id="ifpKbKeys" class="flex flex-wrap justify-center gap-1.5"></div>
+            </div>
+
+            <!-- Interactive Start Button -->
+            <div class="pt-1">
+              <button id="btnStartAdventure" type="button" class="w-full pirate-btn pulse-gold bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:from-amber-400 hover:to-yellow-300 text-amber-950 font-pirate font-bold text-lg sm:text-2xl py-4 px-6 rounded-2xl border-3 border-amber-800 flex items-center justify-center gap-3">
+                <span>⛵</span>
+                <span>ANGKAT JANGKAR &amp; MULAI BERLAYAR! (SET SAIL)</span>
+                <span>🪙</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SCREEN 1: INTERACTIVE PIRATE WORLD MAP     -->
+    <!-- ========================================== -->
+    <section id="screenMap" class="hidden w-full space-y-4">
+      <div class="parchment-card rounded-3xl p-4 sm:p-6">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+          <div>
+            <h2 class="text-xl sm:text-2xl font-pirate font-bold text-amber-950 flex items-center gap-2">
+              <span>🗺️</span> Peta Petualangan Kapten (Pirate Quest Map)
+            </h2>
+            <p class="text-xs sm:text-sm text-amber-900">
+              Sentuh pulau di peta atau <strong>geser kapal bajak lautmu</strong> di layar kanvas menuju pulau untuk belajar &amp; bermain!
+            </p>
+          </div>
+          <div class="bg-amber-900 text-amber-100 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold">
+            🎯 Misi: Selesaikan 5 Pulau untuk Membuka Sertifikat Kapten Emas!
+          </div>
+        </div>
+
+        <!-- Interactive HTML5 Canvas Pirate Sea Map (IFP Widescreen Height) -->
+        <div class="relative w-full h-64 sm:h-80 lg:h-96 rounded-2xl overflow-hidden border-4 border-amber-800 bg-sky-900 shadow-inner">
+          <canvas id="mapCanvas" class="w-full h-full block cursor-pointer touch-none"></canvas>
+          <div class="absolute bottom-2 left-2 right-2 flex flex-wrap items-center justify-between gap-2 pointer-events-none">
+            <span class="bg-slate-900/80 text-amber-200 text-xs px-3 py-1 rounded-full border border-amber-500/40">
+              👆 Sentuh / Geser Kapal di Laut atau Klik Kartu Pulau di Bawah!
+            </span>
+            <span id="mapShipStatus" class="bg-amber-500 text-amber-950 font-pirate font-bold text-xs px-3 py-1 rounded-full shadow">
+              ⚓ Kapal siap berlayar!
+            </span>
+          </div>
+        </div>
+
+        <!-- 5 Island Cards Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 mt-4">
+          <!-- Island 1 -->
+          <div data-island="1" class="island-card pirate-btn cursor-pointer rounded-2xl p-3.5 border-3 border-amber-700 bg-gradient-to-b from-amber-100 to-amber-200 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <span class="bg-amber-800 text-amber-100 font-pirate text-xs px-2 py-0.5 rounded-lg">LEVEL 1 • MATERI</span>
+                <span id="badgeLvl1" class="text-xs font-bold text-amber-700">🔓 Siap</span>
+              </div>
+              <h3 class="font-pirate font-bold text-base text-amber-950 mt-1">🏝️ Pulau Mesin Waktu (Past Tense)</h3>
+              <p class="text-xs text-amber-900 mt-1">Putar roda waktu, balik kartu Verb 1 ➔ Verb 2, &amp; geser koin ke peti harta!</p>
+            </div>
+            <button data-goto-level="1" class="mt-3 w-full bg-amber-600 hover:bg-amber-500 text-white font-pirate font-bold py-2 rounded-xl text-xs">
+              Masuk Level 1 ➔
+            </button>
+          </div>
+
+          <!-- Island 2 -->
+          <div data-island="2" class="island-card pirate-btn cursor-pointer rounded-2xl p-3.5 border-3 border-amber-700 bg-gradient-to-b from-amber-100 to-amber-200 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <span class="bg-emerald-800 text-emerald-100 font-pirate text-xs px-2 py-0.5 rounded-lg">LEVEL 2 • MATERI</span>
+                <span id="badgeLvl2" class="text-xs font-bold text-amber-700">🔓 Siap</span>
+              </div>
+              <h3 class="font-pirate font-bold text-base text-amber-950 mt-1">📜 Pulau Gulungan Recount</h3>
+              <p class="text-xs text-amber-900 mt-1">Gosok pasir pantai dengan jarimu &amp; susun urutan cerita liburan Kapten!</p>
+            </div>
+            <button data-goto-level="2" class="mt-3 w-full bg-emerald-700 hover:bg-emerald-600 text-white font-pirate font-bold py-2 rounded-xl text-xs">
+              Masuk Level 2 ➔
+            </button>
+          </div>
+
+          <!-- Island 3 -->
+          <div data-island="3" class="island-card pirate-btn cursor-pointer rounded-2xl p-3.5 border-3 border-amber-700 bg-gradient-to-b from-amber-100 to-amber-200 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <span class="bg-red-800 text-red-100 font-pirate text-xs px-2 py-0.5 rounded-lg">LEVEL 3 • GAME</span>
+                <span id="badgeLvl3" class="text-xs font-bold text-amber-700">🔓 Siap</span>
+              </div>
+              <h3 class="font-pirate font-bold text-base text-amber-950 mt-1">💣 Teluk Meriam (Cannon Quiz)</h3>
+              <p class="text-xs text-amber-900 mt-1">Tembakkan meriam kapal ke tong jawaban Past Tense yang benar!</p>
+            </div>
+            <button data-goto-level="3" class="mt-3 w-full bg-red-600 hover:bg-red-500 text-white font-pirate font-bold py-2 rounded-xl text-xs">
+              Mainkan Level 3 ➔
+            </button>
+          </div>
+
+          <!-- Island 4 -->
+          <div data-island="4" class="island-card pirate-btn cursor-pointer rounded-2xl p-3.5 border-3 border-amber-700 bg-gradient-to-b from-amber-100 to-amber-200 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <span class="bg-purple-800 text-purple-100 font-pirate text-xs px-2 py-0.5 rounded-lg">LEVEL 4 • GAME</span>
+                <span id="badgeLvl4" class="text-xs font-bold text-amber-700">🔓 Siap</span>
+              </div>
+              <h3 class="font-pirate font-bold text-base text-amber-950 mt-1">🐙 Lautan Kraken (Recount Quest)</h3>
+              <p class="text-xs text-amber-900 mt-1">Bangun jembatan kata Past Tense &amp; pecahkan teka-teki cerita Sinta!</p>
+            </div>
+            <button data-goto-level="4" class="mt-3 w-full bg-purple-700 hover:bg-purple-600 text-white font-pirate font-bold py-2 rounded-xl text-xs">
+              Mainkan Level 4 ➔
+            </button>
+          </div>
+
+          <!-- Island 5 -->
+          <div data-island="5" class="island-card pirate-btn cursor-pointer rounded-2xl p-3.5 border-3 border-amber-700 bg-gradient-to-b from-amber-100 to-amber-200 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <span class="bg-sky-800 text-sky-100 font-pirate text-xs px-2 py-0.5 rounded-lg">LEVEL 5 • REFLEKSI</span>
+                <span id="badgeLvl5" class="text-xs font-bold text-amber-700">🔓 Siap</span>
+              </div>
+              <h3 class="font-pirate font-bold text-base text-amber-950 mt-1">🏆 Buku Harian &amp; Sertifikat</h3>
+              <p class="text-xs text-amber-900 mt-1">Buat cerita Recount A1-mu, tanda tangan di kanvas, &amp; klaim piala!</p>
+            </div>
+            <button data-goto-level="5" class="mt-3 w-full bg-sky-700 hover:bg-sky-600 text-white font-pirate font-bold py-2 rounded-xl text-xs">
+              Masuk Level 5 ➔
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SCREEN 2: LEVEL 1 - PAST TENSE FORGE       -->
+    <!-- ========================================== -->
+    <section id="screenLevel1" class="hidden w-full space-y-4">
+      <div class="parchment-card rounded-3xl p-4 sm:p-6">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b-2 border-amber-300 pb-3 mb-4">
+          <div>
+            <span class="bg-amber-800 text-amber-100 font-pirate text-xs px-2.5 py-1 rounded-full">PULAU 1 • MATERI INTERAKTIF</span>
+            <h2 class="text-xl sm:text-2xl font-pirate font-bold text-amber-950 mt-1">
+              ⚙️ Rahasia Mesin Waktu: Simple Past Tense (Level A1)
+            </h2>
+          </div>
+          <div class="flex gap-2">
+            <button data-lvl1-tab="timewheel" class="lvl1-tab-btn pirate-btn bg-amber-600 text-white font-pirate font-bold px-3 py-2 rounded-xl text-xs sm:text-sm">
+              1️⃣ Roda Waktu &amp; Kartu Verb
+            </button>
+            <button data-lvl1-tab="chestsort" class="lvl1-tab-btn pirate-btn bg-amber-200 text-amber-950 font-pirate font-bold px-3 py-2 rounded-xl text-xs sm:text-sm">
+              2️⃣ Geser Koin Harta (+50 🪙)
+            </button>
+            <button data-lvl1-tab="builder" class="lvl1-tab-btn pirate-btn bg-amber-200 text-amber-950 font-pirate font-bold px-3 py-2 rounded-xl text-xs sm:text-sm">
+              3️⃣ Rakit Kalimat (+50 🪙)
+            </button>
+          </div>
+        </div>
+
+        <!-- TAB 1A: Interactive Time Slider & Verb Flip Cards -->
+        <div id="lvl1TabTimewheel" class="space-y-5">
+          <!-- Concept Box -->
+          <div class="bg-amber-100/90 border-2 border-amber-500 rounded-2xl p-4">
+            <p class="text-sm sm:text-base text-amber-950 leading-relaxed">
+              🏴‍☠️ <strong>Apa itu Simple Past Tense?</strong> Kita menggunakan <em>Simple Past Tense</em> untuk menceritakan kegiatan yang <strong>sudah selesai di masa lalu</strong> (misalnya: <em>yesterday</em> = kemarin, <em>last week</em> = minggu lalu, <em>two days ago</em> = dua hari lalu). Kuncinya: kata kerja berubah menjadi <strong>Verb 2</strong>!
+            </p>
+          </div>
+
+          <!-- Interactive Touch Time Slider -->
+          <div class="bg-gradient-to-r from-sky-900 via-indigo-900 to-amber-900 text-white rounded-2xl p-4 sm:p-5 border-3 border-amber-500">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <h3 class="font-pirate font-bold text-base sm:text-lg text-amber-300">
+                🧭 Geser Tuas Kemudi Waktu (Slide the Time Wheel!):
+              </h3>
+              <span id="timeWheelBadge" class="bg-amber-400 text-amber-950 font-pirate font-bold px-3 py-1 rounded-full text-xs sm:text-sm">
+                ⏳ Mode: PRESENT (Hari Ini) ➔ Geser ke Kanan!
+              </span>
+            </div>
+
+            <div class="px-2 py-3">
+              <input id="timeSlider" type="range" min="0" max="100" value="0"
+                class="w-full h-4 bg-amber-200 rounded-lg appearance-none cursor-pointer accent-amber-400" />
+              <div class="flex justify-between text-xs font-pirate font-bold text-amber-200 mt-2">
+                <span>☀️ EVERY DAY (Verb 1 - Present)</span>
+                <span>⏪ YESTERDAY / LAST WEEK (Verb 2 - Past Tense)</span>
+              </div>
+            </div>
+
+            <!-- Live Sentence Transformation Display -->
+            <div id="timeWheelDisplay" class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-3">
+              <!-- Populated dynamically by JS -->
+            </div>
+          </div>
+
+          <!-- Interactive Tap-to-Flip Verb Cards (Regular vs Irregular) -->
+          <div>
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+              <h3 class="font-pirate font-bold text-base sm:text-lg text-amber-950">
+                🃏 Sentuh Kartu untuk Membalik (Verb 1 ➔ Verb 2) &amp; Dengarkan Suaranya!
+              </h3>
+              <span class="text-xs font-semibold text-amber-800 bg-amber-200 px-3 py-1 rounded-full">
+                Sudah dibuka: <strong id="flippedCountText">0/8</strong> kartu
+              </span>
+            </div>
+            <div id="verbFlipGrid" class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+
+          <div class="flex justify-end pt-2">
+            <button id="btnToLvl1Tab2" class="pirate-btn bg-emerald-600 hover:bg-emerald-500 text-white font-pirate font-bold px-5 py-3 rounded-2xl text-sm sm:text-base flex items-center gap-2">
+              <span>Lanjut ke Tantangan Geser Koin Harta</span>
+              <span>➔</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- TAB 1B: Interactive Drag / Tap Sorting Treasure Chests -->
+        <div id="lvl1TabChestsort" class="hidden space-y-4">
+          <div class="bg-amber-100 border-2 border-amber-500 rounded-2xl p-3.5 flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h3 class="font-pirate font-bold text-base sm:text-lg text-amber-950">
+                🪙 Tantangan Peti Harta: Regular (+ed) vs Irregular Verb (Berubah Bentuk)
+              </h3>
+              <p class="text-xs sm:text-sm text-amber-900">
+                <strong>Cara Bermain (Touchscreen / Mouse):</strong> Geser (Drag) koin emas ke Peti yang tepat, ATAU <strong>sentuh koin lalu sentuh Peti Harta</strong>!
+              </p>
+            </div>
+            <button id="btnResetChestSort" class="pirate-btn bg-amber-700 hover:bg-amber-600 text-white text-xs font-pirate px-3 py-2 rounded-xl">
+              🔄 Acak Ulang Koin
+            </button>
+          </div>
+
+          <!-- Unsorted Coins Pool -->
+          <div class="bg-sky-950/90 border-3 border-amber-600 rounded-2xl p-4">
+            <div class="text-xs font-pirate text-amber-300 mb-2 flex items-center justify-between">
+              <span>👇 KOIN KATA KERJA (SENTUH ATAU GESER KOIN INI):</span>
+              <span id="chestSortProgress" class="text-sky-300">Terisi: 0/8</span>
+            </div>
+            <div id="coinPool" class="flex flex-wrap gap-2.5 min-h-[68px] items-center justify-center p-2 rounded-xl bg-sky-900/60 border border-sky-700">
+              <!-- Coins rendered by JS -->
+            </div>
+          </div>
+
+          <!-- Two Target Treasure Chests -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <!-- Regular Chest -->
+            <div id="chestRegular" data-chest-type="regular"
+              class="chest-dropzone cursor-pointer rounded-2xl p-4 border-4 border-emerald-600 bg-gradient-to-b from-emerald-50 to-emerald-100 hover:from-emerald-100 transition min-h-[170px] flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between">
+                  <span class="text-2xl">🧰</span>
+                  <span class="bg-emerald-700 text-white text-xs font-pirate font-bold px-2.5 py-1 rounded-full">Peti 1: REGULAR VERBS</span>
+                </div>
+                <h4 class="font-pirate font-bold text-emerald-950 text-base mt-1">Kata Kerja Beraturan (+ed / +d)</h4>
+                <p class="text-xs text-emerald-800">Contoh: <em>walk ➔ walked, love ➔ loved</em> (Sentuh peti ini untuk menaruh koin yang dipilih)</p>
+              </div>
+              <div id="chestRegularItems" class="flex flex-wrap gap-2 mt-3 min-h-[48px] p-2 rounded-xl bg-white/80 border-2 border-dashed border-emerald-400"></div>
+            </div>
+
+            <!-- Irregular Chest -->
+            <div id="chestIrregular" data-chest-type="irregular"
+              class="chest-dropzone cursor-pointer rounded-2xl p-4 border-4 border-purple-600 bg-gradient-to-b from-purple-50 to-purple-100 hover:from-purple-100 transition min-h-[170px] flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between">
+                  <span class="text-2xl">👑</span>
+                  <span class="bg-purple-700 text-white text-xs font-pirate font-bold px-2.5 py-1 rounded-full">Peti 2: IRREGULAR VERBS</span>
+                </div>
+                <h4 class="font-pirate font-bold text-purple-950 text-base mt-1">Kata Kerja Tak Beraturan (Unik)</h4>
+                <p class="text-xs text-purple-800">Contoh: <em>go ➔ went, eat ➔ ate</em> (Sentuh peti ini untuk menaruh koin yang dipilih)</p>
+              </div>
+              <div id="chestIrregularItems" class="flex flex-wrap gap-2 mt-3 min-h-[48px] p-2 rounded-xl bg-white/80 border-2 border-dashed border-purple-400"></div>
+            </div>
+          </div>
+
+          <div id="chestSortFeedback" class="hidden p-3.5 rounded-2xl font-semibold text-sm"></div>
+
+          <div class="flex justify-between pt-2">
+            <button data-lvl1-tab="timewheel" class="lvl1-tab-btn pirate-btn bg-slate-600 text-white font-pirate font-bold px-4 py-2.5 rounded-xl text-xs sm:text-sm">
+              ⬅ Kembali ke Roda Waktu
+            </button>
+            <button id="btnToLvl1Tab3" class="pirate-btn bg-emerald-600 hover:bg-emerald-500 text-white font-pirate font-bold px-5 py-2.5 rounded-xl text-xs sm:text-sm">
+              Lanjut ke Rakit Kalimat (+ / - / ?) ➔
+            </button>
+          </div>
+        </div>
+
+        <!-- TAB 1C: Interactive Sentence Formula Wheel (+, -, ?) -->
+        <div id="lvl1TabBuilder" class="hidden space-y-4">
+          <div class="bg-amber-100 border-2 border-amber-500 rounded-2xl p-4">
+            <h3 class="font-pirate font-bold text-base sm:text-lg text-amber-950">
+              ⚓ Rumus Penting Kapten: Kalimat Positif (+), Negatif (-), dan Tanya (?)
+            </h3>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 mt-2 text-xs sm:text-sm">
+              <div class="bg-emerald-100 border-2 border-emerald-500 p-2.5 rounded-xl">
+                <div class="font-pirate font-bold text-emerald-900">➕ POSITIF (+) • Pakai Verb 2</div>
+                <div class="mt-1 text-emerald-950">S + <strong>Verb 2</strong></div>
+                <div class="text-xs text-emerald-800 italic">I <strong>went</strong> to the island.</div>
+              </div>
+              <div class="bg-rose-100 border-2 border-rose-500 p-2.5 rounded-xl">
+                <div class="font-pirate font-bold text-rose-900">➖ NEGATIF (-) • Kembali ke Verb 1!</div>
+                <div class="mt-1 text-rose-950">S + <strong>didn't + Verb 1</strong></div>
+                <div class="text-xs text-rose-800 italic">I <strong>didn't go</strong> to the island.</div>
+              </div>
+              <div class="bg-sky-100 border-2 border-sky-500 p-2.5 rounded-xl">
+                <div class="font-pirate font-bold text-sky-900">❓ TANYA (?) • Kembali ke Verb 1!</div>
+                <div class="mt-1 text-sky-950"><strong>Did</strong> + S + <strong>Verb 1</strong>?</div>
+                <div class="text-xs text-sky-800 italic"><strong>Did</strong> you <strong>go</strong> to the island?</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Interactive Sentence Transformer Machine -->
+          <div class="bg-slate-900 text-white rounded-2xl p-4 sm:p-5 border-3 border-amber-500 space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="font-pirate font-bold text-amber-300 text-sm sm:text-base">
+                🛠️ Bengkel Kapal: Sentuh Kata yang Tepat untuk Memperbaiki 3 Kalimat Kapten!
+              </span>
+              <span id="builderScoreBadge" class="bg-amber-500 text-amber-950 font-pirate font-bold text-xs px-3 py-1 rounded-full">
+                Selesai: 0/3
+              </span>
+            </div>
+
+            <div id="builderQuestionsContainer" class="space-y-3">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center justify-between gap-2 pt-2">
+            <button data-lvl1-tab="chestsort" class="lvl1-tab-btn pirate-btn bg-slate-600 text-white font-pirate font-bold px-4 py-2.5 rounded-xl text-xs sm:text-sm">
+              ⬅ Kembali ke Peti Harta
+            </button>
+            <button id="btnCompleteLevel1" class="pirate-btn bg-gradient-to-r from-amber-500 to-yellow-400 text-amber-950 font-pirate font-bold px-6 py-3 rounded-2xl text-sm sm:text-base border-2 border-amber-900">
+              🏆 Selesaikan Pulau 1 &amp; Berlayar ke Pulau 2 (Recount Text) ➔
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SCREEN 3: LEVEL 2 - RECOUNT SCROLL ISLAND  -->
+    <!-- ========================================== -->
+    <section id="screenLevel2" class="hidden w-full space-y-4">
+      <div class="parchment-card rounded-3xl p-4 sm:p-6">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b-2 border-amber-300 pb-3 mb-4">
+          <div>
+            <span class="bg-emerald-800 text-emerald-100 font-pirate text-xs px-2.5 py-1 rounded-full">PULAU 2 • MATERI INTERAKTIF</span>
+            <h2 class="text-xl sm:text-2xl font-pirate font-bold text-amber-950 mt-1">
+              📜 Gulungan Harta Karun: Recount Text (Menceritakan Pengalaman)
+            </h2>
+          </div>
+          <div class="flex gap-2">
+            <button data-lvl2-tab="scratch" class="lvl2-tab-btn pirate-btn bg-emerald-700 text-white font-pirate font-bold px-3 py-2 rounded-xl text-xs sm:text-sm">
+              1️⃣ Gosok Pasir Harta Karun
+            </button>
+            <button data-lvl2-tab="order" class="lvl2-tab-btn pirate-btn bg-amber-200 text-amber-950 font-pirate font-bold px-3 py-2 rounded-xl text-xs sm:text-sm">
+              2️⃣ Susun Puzzle Cerita (+60 🪙)
+            </button>
+          </div>
+        </div>
+
+        <!-- TAB 2A: Touch Scratch-the-Sand Recount Structure -->
+        <div id="lvl2TabScratch" class="space-y-4">
+          <div class="bg-emerald-50 border-2 border-emerald-600 rounded-2xl p-4">
+            <p class="text-sm sm:text-base text-emerald-950">
+              🏝️ <strong>Apa itu Recount Text?</strong> Teks dalam Bahasa Inggris yang menceritakan kembali <strong>pengalaman atau kejadian di masa lalu secara berurutan</strong>. Tujuannya untuk memberi informasi atau menghibur pembaca.
+            </p>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-3">
+              <div class="bg-white p-3 rounded-xl border-2 border-amber-500">
+                <div class="font-pirate font-bold text-amber-900 text-sm">1. ORIENTATION (Pembuka)</div>
+                <p class="text-xs text-slate-700 mt-1">Pengenalan: <strong>Who</strong> (Siapa), <strong>Where</strong> (Di mana), dan <strong>When</strong> (Kapan kejadian itu terjadi).</p>
+              </div>
+              <div class="bg-white p-3 rounded-xl border-2 border-sky-500">
+                <div class="font-pirate font-bold text-sky-900 text-sm">2. EVENTS (Urutan Kejadian)</div>
+                <p class="text-xs text-slate-700 mt-1">Rangkaian peristiwa berurutan memakai kata penghubung: <em>First, Then, After that, Next</em>.</p>
+              </div>
+              <div class="bg-white p-3 rounded-xl border-2 border-purple-500">
+                <div class="font-pirate font-bold text-purple-900 text-sm">3. RE-ORIENTATION (Penutup)</div>
+                <p class="text-xs text-slate-700 mt-1">Kesimpulan atau perasaan penulis di akhir cerita: <em>Finally, I was very happy!</em></p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Interactive Touchscreen Sand Scratch Card -->
+          <div class="bg-amber-950 text-amber-100 rounded-2xl p-4 sm:p-5 border-3 border-amber-600">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <div>
+                <h3 class="font-pirate font-bold text-base sm:text-lg text-amber-300">
+                  🖐️ Gosok Pasir Pantai dengan Jarimu / Mouse untuk Membuka Cerita Kapten!
+                </h3>
+                <p class="text-xs text-amber-200">
+                  Gosok kanvas pasir emas di bawah ini (atau klik tombol Bersihkan Pasir) lalu ketuk tombol suara 🔊 untuk mendengarkan!
+                </p>
+              </div>
+              <div class="flex items-center gap-2">
+                <span id="scratchPercentBadge" class="bg-amber-500 text-amber-950 font-pirate font-bold text-xs px-3 py-1 rounded-full">
+                  Terbuka: 0%
+                </span>
+                <button id="btnClearSand" class="pirate-btn bg-sky-500 hover:bg-sky-400 text-slate-950 font-pirate font-bold text-xs px-3 py-1.5 rounded-xl">
+                  ✨ Buka Semua Pasir
+                </button>
+              </div>
+            </div>
+
+            <!-- Underlying Story + Scratch Canvas Overlay -->
+            <div class="relative rounded-2xl overflow-hidden border-3 border-amber-400 bg-amber-50 text-slate-900 p-4 sm:p-5">
+              <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                  <h4 class="font-pirate font-bold text-lg text-amber-900">📖 My Trip to Coral Island (Liburanku ke Pulau Karang)</h4>
+                  <button type="button" data-speak="Last Sunday, I went to Coral Island with my crew. First, we sailed on our wooden ship in the morning. Then, we swam in the blue sea and saw colorful fish. After that, we cooked grilled fish on the beach. Finally, we went home in the afternoon. We felt very happy!" class="speak-btn pirate-btn bg-amber-500 hover:bg-amber-400 text-amber-950 font-pirate font-bold text-xs px-3 py-1.5 rounded-xl">
+                    🔊 Dengarkan Cerita
+                  </button>
+                </div>
+
+                <div class="p-3 rounded-xl bg-amber-100 border-l-4 border-amber-600">
+                  <span class="text-[11px] font-pirate font-bold uppercase bg-amber-700 text-white px-2 py-0.5 rounded">Orientation (Siapa, Kapan, Di mana)</span>
+                  <p class="text-sm sm:text-base font-medium mt-1">
+                    <strong>Last Sunday</strong>, I <strong>went</strong> to Coral Island with my crew.
+                  </p>
+                  <p class="text-xs text-amber-900 mt-0.5">🇮🇩 <em>Minggu lalu, aku pergi ke Pulau Karang bersama kru kapalku.</em></p>
+                </div>
+
+                <div class="p-3 rounded-xl bg-sky-100 border-l-4 border-sky-600">
+                  <span class="text-[11px] font-pirate font-bold uppercase bg-sky-700 text-white px-2 py-0.5 rounded">Events (Urutan Kejadian: First, Then, After that)</span>
+                  <p class="text-sm sm:text-base font-medium mt-1">
+                    <strong>First</strong>, we <strong>sailed</strong> on our wooden ship in the morning. <strong>Then</strong>, we <strong>swam</strong> in the blue sea and <strong>saw</strong> colorful fish. <strong>After that</strong>, we <strong>cooked</strong> grilled fish on the beach.
+                  </p>
+                  <p class="text-xs text-sky-900 mt-0.5">🇮🇩 <em>Pertama, kami berlayar di kapal kayu pagi hari. Kemudian, kami berenang di laut biru dan melihat ikan warna-warni. Setelah itu, kami memasak ikan bakar di pantai.</em></p>
+                </div>
+
+                <div class="p-3 rounded-xl bg-purple-100 border-l-4 border-purple-600">
+                  <span class="text-[11px] font-pirate font-bold uppercase bg-purple-700 text-white px-2 py-0.5 rounded">Re-orientation (Penutup &amp; Perasaan)</span>
+                  <p class="text-sm sm:text-base font-medium mt-1">
+                    <strong>Finally</strong>, we <strong>went</strong> home in the afternoon. We <strong>felt</strong> very happy!
+                  </p>
+                  <p class="text-xs text-purple-900 mt-0.5">🇮🇩 <em>Akhirnya, kami pulang di sore hari. Kami merasa sangat senang!</em></p>
+                </div>
+              </div>
+
+              <!-- Touch Scratch Canvas Overlay -->
+              <canvas id="scratchCanvas" class="absolute inset-0 w-full h-full cursor-grab active:cursor-grabbing touch-none"></canvas>
+            </div>
+          </div>
+
+          <div class="flex justify-end">
+            <button id="btnToLvl2Tab2" class="pirate-btn bg-emerald-600 hover:bg-emerald-500 text-white font-pirate font-bold px-5 py-3 rounded-2xl text-sm sm:text-base">
+              Lanjut ke Susun Puzzle Cerita Recount ➔
+            </button>
+          </div>
+        </div>
+
+        <!-- TAB 2B: Interactive Story Sequencer (Susun Urutan Recount) -->
+        <div id="lvl2TabOrder" class="hidden space-y-4">
+          <div class="bg-amber-100 border-2 border-amber-500 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h3 class="font-pirate font-bold text-base sm:text-lg text-amber-950">
+                🧩 Puzzle Peta Cerita: Susun 4 Bagian Recount Text Ini Menjadi Urutan yang Benar!
+              </h3>
+              <p class="text-xs sm:text-sm text-amber-900">
+                Sentuh tombol <strong>⬆️ Naik</strong> atau <strong>⬇️ Turun</strong> (atau sentuh 2 kartu untuk menukar posisinya) agar urut dari <em>Orientation ➔ Event 1 ➔ Event 2 ➔ Re-orientation</em>!
+              </p>
+            </div>
+            <button id="btnCheckStoryOrder" class="pirate-btn bg-emerald-600 hover:bg-emerald-500 text-white font-pirate font-bold px-4 py-2.5 rounded-xl text-xs sm:text-sm">
+              ✅ Periksa Urutan Cerita
+            </button>
+          </div>
+
+          <div id="storyOrderList" class="space-y-2.5">
+            <!-- Populated by JS -->
+          </div>
+
+          <div id="storyOrderFeedback" class="hidden p-4 rounded-2xl font-semibold text-sm"></div>
+
+          <div class="flex flex-wrap items-center justify-between gap-2 pt-2">
+            <button data-lvl2-tab="scratch" class="lvl2-tab-btn pirate-btn bg-slate-600 text-white font-pirate font-bold px-4 py-2.5 rounded-xl text-xs sm:text-sm">
+              ⬅ Kembali ke Gosok Pasir
+            </button>
+            <button id="btnCompleteLevel2" class="pirate-btn bg-gradient-to-r from-amber-500 to-yellow-400 text-amber-950 font-pirate font-bold px-6 py-3 rounded-2xl text-sm sm:text-base border-2 border-amber-900">
+              🏆 Selesaikan Pulau 2 &amp; Tantang Meriam Bajak Laut (Level 3) ➔
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SCREEN 4: LEVEL 3 - CANNON BATTLE QUIZ     -->
+    <!-- ========================================== -->
+    <section id="screenLevel3" class="hidden w-full space-y-4">
+      <div class="parchment-card rounded-3xl p-4 sm:p-6">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b-2 border-amber-300 pb-3 mb-3">
+          <div>
+            <span class="bg-red-800 text-red-100 font-pirate text-xs px-2.5 py-1 rounded-full">PULAU 3 • LATIHAN SOAL GAME 1</span>
+            <h2 class="text-xl sm:text-2xl font-pirate font-bold text-amber-950 mt-1">
+              💣 Pertempuran Meriam Past Tense (Cannon Battle Quiz)
+            </h2>
+          </div>
+          <div class="flex items-center gap-3">
+            <span id="cannonQProgress" class="bg-amber-900 text-amber-100 font-pirate font-bold text-xs sm:text-sm px-3 py-1.5 rounded-xl">
+              Soal 1 / 6
+            </span>
+            <span id="cannonScoreText" class="bg-red-700 text-white font-pirate font-bold text-xs sm:text-sm px-3 py-1.5 rounded-xl">
+              🎯 Skor Meriam: 0
+            </span>
+          </div>
+        </div>
+
+        <!-- Interactive Cannon Battle Canvas -->
+        <div class="relative w-full h-44 sm:h-52 rounded-2xl overflow-hidden border-4 border-amber-900 bg-sky-950 mb-4">
+          <canvas id="cannonCanvas" class="w-full h-full block"></canvas>
+          <div id="cannonBanner" class="absolute top-2 left-3 bg-slate-900/80 text-amber-300 text-xs font-pirate px-3 py-1 rounded-full border border-amber-500/40">
+            ⚓ Pilih jawaban yang benar untuk menembakkan meriam ke target!
+          </div>
+        </div>
+
+        <!-- Question Box -->
+        <div id="cannonQuizBox" class="bg-amber-100 border-3 border-amber-700 rounded-2xl p-4 sm:p-5 space-y-4">
+          <div class="flex items-start justify-between gap-2">
+            <div>
+              <span id="cannonQHint" class="text-xs font-bold uppercase tracking-wider text-amber-800 bg-amber-200 px-2.5 py-0.5 rounded-full">
+                Petunjuk A1
+              </span>
+              <h3 id="cannonQText" class="font-pirate font-bold text-lg sm:text-xl text-slate-900 mt-2">
+                Loading question...
+              </h3>
+              <p id="cannonQIndo" class="text-xs sm:text-sm text-amber-900 mt-1 italic"></p>
+            </div>
+            <button id="btnSpeakCannonQ" type="button" class="pirate-btn bg-amber-500 hover:bg-amber-400 text-amber-950 font-pirate font-bold px-3 py-2 rounded-xl text-xs shrink-0">
+              🔊 Suara
+            </button>
+          </div>
+
+          <!-- 4 Barrel Options -->
+          <div id="cannonOptionsGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <!-- Rendered by JS -->
+          </div>
+
+          <!-- Feedback & Next Question -->
+          <div id="cannonFeedbackBox" class="hidden p-4 rounded-2xl border-2 flex flex-wrap items-center justify-between gap-3">
+            <div id="cannonFeedbackText" class="text-sm font-semibold"></div>
+            <button id="btnNextCannonQ" class="pirate-btn bg-amber-600 hover:bg-amber-500 text-white font-pirate font-bold px-5 py-2.5 rounded-xl text-sm">
+              Soal Berikutnya ➔
+            </button>
+          </div>
+        </div>
+
+        <!-- Level 3 Complete Panel -->
+        <div id="cannonResultPanel" class="hidden text-center bg-gradient-to-b from-amber-100 to-amber-200 border-3 border-amber-700 rounded-2xl p-6 space-y-4">
+          <div class="text-5xl">🏴‍☠️🎉</div>
+          <h3 class="text-2xl font-pirate font-bold text-amber-950">Pertempuran Teluk Meriam Selesai!</h3>
+          <p id="cannonFinalSummary" class="text-sm sm:text-base text-amber-900 font-medium"></p>
+          <div class="flex flex-wrap justify-center gap-3">
+            <button id="btnRetryCannon" class="pirate-btn bg-slate-700 hover:bg-slate-600 text-white font-pirate font-bold px-5 py-3 rounded-xl text-sm">
+              🔄 Mainkan Ulang Level 3
+            </button>
+            <button data-goto-level="4" class="pirate-btn bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-pirate font-bold px-6 py-3 rounded-xl text-sm sm:text-base">
+              🐙 Lanjut ke Level 4: Lautan Kraken ➔
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SCREEN 5: LEVEL 4 - KRAKEN'S STORY ESCAPE  -->
+    <!-- ========================================== -->
+    <section id="screenLevel4" class="hidden w-full space-y-4">
+      <div class="parchment-card rounded-3xl p-4 sm:p-6">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b-2 border-amber-300 pb-3 mb-4">
+          <div>
+            <span class="bg-purple-800 text-purple-100 font-pirate text-xs px-2.5 py-1 rounded-full">PULAU 4 • LATIHAN SOAL GAME 2</span>
+            <h2 class="text-xl sm:text-2xl font-pirate font-bold text-amber-950 mt-1">
+              🐙 Lautan Kraken: Susun Jembatan Kata &amp; Detektif Recount
+            </h2>
+          </div>
+          <div class="flex gap-2">
+            <button data-lvl4-tab="bridge" class="lvl4-tab-btn pirate-btn bg-purple-700 text-white font-pirate font-bold px-3 py-2 rounded-xl text-xs sm:text-sm">
+              🌉 Bagian A: Jembatan Kata (3 Soal)
+            </button>
+            <button data-lvl4-tab="detective" class="lvl4-tab-btn pirate-btn bg-amber-200 text-amber-950 font-pirate font-bold px-3 py-2 rounded-xl text-xs sm:text-sm">
+              🔍 Bagian B: Detektif Cerita (4 Soal)
+            </button>
+          </div>
+        </div>
+
+        <!-- TAB 4A: Interactive Bridge Word Builder -->
+        <div id="lvl4TabBridge" class="space-y-4">
+          <div class="bg-purple-100 border-2 border-purple-500 rounded-2xl p-3.5 flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h3 class="font-pirate font-bold text-base sm:text-lg text-purple-950">
+                🌉 Bangun Jembatan Kayu di Atas Kraken! (Sentuh Kata Sesuai Urutan)
+              </h3>
+              <p class="text-xs sm:text-sm text-purple-900">
+                Sentuh papan kata di bawah untuk menyusunnya menjadi kalimat Bahasa Inggris A1 yang benar. Sentuh papan di jembatan jika ingin membatalkan!
+              </p>
+            </div>
+            <span id="bridgeProgressBadge" class="bg-purple-800 text-white font-pirate font-bold text-xs px-3 py-1.5 rounded-xl">
+              Jembatan 1 / 3
+            </span>
+          </div>
+
+          <div class="bg-slate-900 text-white rounded-2xl p-4 sm:p-5 border-3 border-purple-500 space-y-4">
+            <div class="flex items-center justify-between">
+              <div id="bridgeClueIndo" class="text-sm sm:text-base font-semibold text-amber-300">
+                🇮🇩 Arti: "Kemarin kami pergi ke pantai."
+              </div>
+              <button id="btnResetBridgeWords" class="pirate-btn bg-slate-700 hover:bg-slate-600 text-xs font-pirate px-3 py-1.5 rounded-xl">
+                🔄 Ulangi Susunan
+              </button>
+            </div>
+
+            <!-- Constructed Bridge Slot -->
+            <div>
+              <div class="text-xs text-sky-300 font-pirate mb-1">🪵 JEMBATAN KALIMATMU (SENTUH KATA UNTUK MENGHAPUS):</div>
+              <div id="bridgeSlot" class="min-h-[60px] p-3 rounded-xl bg-amber-950/90 border-2 border-dashed border-amber-400 flex flex-wrap items-center gap-2">
+                <!-- Selected word planks go here -->
+              </div>
+            </div>
+
+            <!-- Available Word Planks -->
+            <div>
+              <div class="text-xs text-purple-300 font-pirate mb-1">👇 PILIH PAPAN KATA DI BAWAH INI:</div>
+              <div id="bridgePool" class="min-h-[56px] p-3 rounded-xl bg-slate-800 border border-slate-700 flex flex-wrap items-center gap-2">
+                <!-- Available planks -->
+              </div>
+            </div>
+
+            <div id="bridgeFeedback" class="hidden p-3.5 rounded-xl text-sm font-semibold"></div>
+
+            <div class="flex flex-wrap justify-between gap-2">
+              <button id="btnCheckBridge" class="pirate-btn bg-emerald-600 hover:bg-emerald-500 text-white font-pirate font-bold px-5 py-2.5 rounded-xl text-sm">
+                ✅ Periksa Jembatan Kata
+              </button>
+              <button id="btnNextBridge" class="hidden pirate-btn bg-amber-500 hover:bg-amber-400 text-amber-950 font-pirate font-bold px-5 py-2.5 rounded-xl text-sm">
+                Jembatan Berikutnya ➔
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 4B: Recount Reading Detective -->
+        <div id="lvl4TabDetective" class="hidden space-y-4">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+            <!-- Story Scroll Column -->
+            <div class="lg:col-span-5 bg-amber-50 border-3 border-amber-600 rounded-2xl p-4 space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="bg-amber-800 text-amber-100 text-xs font-pirate px-2.5 py-0.5 rounded-full">📜 TEKS RECOUNT A1</span>
+                <button type="button" data-speak="Last Saturday, Riko and his sister visited the Sea Museum in Surabaya. First, they bought two tickets at nine o'clock. Then, they saw a giant whale skeleton and many cute turtles. Riko took five photos with his camera. After that, they ate fried rice and drank orange juice for lunch. Finally, they went home by bus at two o'clock. They were very happy." class="speak-btn pirate-btn bg-amber-500 hover:bg-amber-400 text-amber-950 font-pirate font-bold text-xs px-2.5 py-1 rounded-lg">
+                  🔊 Dengarkan
+                </button>
+              </div>
+              <h3 class="font-pirate font-bold text-lg text-amber-950">Riko's Visit to the Sea Museum</h3>
+              <div class="space-y-2 text-xs sm:text-sm text-slate-800 leading-relaxed">
+                <p class="p-2 rounded-lg bg-amber-100/80">
+                  <strong>[Orientation]</strong> Last Saturday, Riko and his sister <strong>visited</strong> the Sea Museum in Surabaya.
+                </p>
+                <p class="p-2 rounded-lg bg-sky-100/80">
+                  <strong>[Events]</strong> First, they <strong>bought</strong> two tickets at 9 o'clock. Then, they <strong>saw</strong> a giant whale skeleton and many cute turtles. Riko <strong>took</strong> five photos with his camera. After that, they <strong>ate</strong> fried rice and <strong>drank</strong> orange juice for lunch.
+                </p>
+                <p class="p-2 rounded-lg bg-purple-100/80">
+                  <strong>[Re-orientation]</strong> Finally, they <strong>went</strong> home by bus at 2 o'clock. They <strong>were</strong> very happy.
+                </p>
+              </div>
+              <div class="text-[11px] text-amber-900 bg-amber-200/70 p-2 rounded-lg">
+                💡 <strong>Kosakata A1:</strong> <em>visited</em> (mengunjungi), <em>bought</em> (membeli), <em>whale skeleton</em> (kerangka paus), <em>turtles</em> (penyu), <em>took photos</em> (mengambil foto), <em>fried rice</em> (nasi goreng).
+              </div>
+            </div>
+
+            <!-- Detective Questions Column -->
+            <div class="lg:col-span-7 space-y-3" id="detectiveQuestionsList">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center justify-between gap-2 pt-2">
+            <button data-lvl4-tab="bridge" class="lvl4-tab-btn pirate-btn bg-slate-600 text-white font-pirate font-bold px-4 py-2.5 rounded-xl text-xs sm:text-sm">
+              ⬅ Kembali ke Jembatan Kata
+            </button>
+            <button id="btnCompleteLevel4" class="pirate-btn bg-gradient-to-r from-amber-500 to-yellow-400 text-amber-950 font-pirate font-bold px-6 py-3 rounded-2xl text-sm sm:text-base border-2 border-amber-900">
+              🏆 Selesaikan Pulau 4 &amp; Buka Buku Harian Kapten (Refleksi) ➔
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SCREEN 6: LEVEL 5 - REFLECTION & LOGBOOK   -->
+    <!-- ========================================== -->
+    <section id="screenLevel5" class="hidden w-full space-y-4">
+      <div class="parchment-card rounded-3xl p-4 sm:p-6">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b-2 border-amber-300 pb-3 mb-4">
+          <div>
+            <span class="bg-sky-800 text-sky-100 font-pirate text-xs px-2.5 py-1 rounded-full">PULAU 5 • REFLEKSI &amp; KARYA KAPTEN</span>
+            <h2 class="text-xl sm:text-2xl font-pirate font-bold text-amber-950 mt-1">
+              🏆 Buku Harian Kapten (Refleksi Materi Recount &amp; Past Tense)
+            </h2>
+          </div>
+          <span class="text-xs font-semibold bg-amber-200 text-amber-900 px-3 py-1 rounded-full">
+            Langkah Terakhir Petualanganmu!
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+          <!-- Left Column: Interactive Reflection + Guided A1 Recount Builder -->
+          <div class="lg:col-span-7 space-y-4">
+            <!-- 1. Feeling & Mastery Check -->
+            <div class="bg-amber-100/90 border-2 border-amber-500 rounded-2xl p-4 space-y-3">
+              <h3 class="font-pirate font-bold text-base text-amber-950">
+                1️⃣ Bagaimana Perasaanmu Setelah Belajar sambil Berlayar Hari Ini?
+              </h3>
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2" id="moodGrid">
+                <button type="button" data-mood="Sangat Senang & Paham! 🤩" class="mood-btn pirate-btn p-2.5 rounded-xl border-2 border-amber-600 bg-amber-300 font-pirate font-bold text-xs text-amber-950 flex flex-col items-center gap-1">
+                  <span class="text-2xl">🤩</span>
+                  <span>Sangat Senang!</span>
+                </button>
+                <button type="button" data-mood="Seru & Semangat! 😄" class="mood-btn pirate-btn p-2.5 rounded-xl border-2 border-amber-300 bg-white font-pirate font-bold text-xs text-amber-950 flex flex-col items-center gap-1">
+                  <span class="text-2xl">😄</span>
+                  <span>Seru Banget!</span>
+                </button>
+                <button type="button" data-mood="Cukup Paham 😊" class="mood-btn pirate-btn p-2.5 rounded-xl border-2 border-amber-300 bg-white font-pirate font-bold text-xs text-amber-950 flex flex-col items-center gap-1">
+                  <span class="text-2xl">😊</span>
+                  <span>Cukup Paham</span>
+                </button>
+                <button type="button" data-mood="Ingin Latihan Lagi 💪" class="mood-btn pirate-btn p-2.5 rounded-xl border-2 border-amber-300 bg-white font-pirate font-bold text-xs text-amber-950 flex flex-col items-center gap-1">
+                  <span class="text-2xl">💪</span>
+                  <span>Latihan Lagi</span>
+                </button>
+              </div>
+
+              <!-- Checklist Mastery -->
+              <div class="pt-2 space-y-2">
+                <div class="font-pirate font-bold text-xs sm:text-sm text-amber-950">
+                  ✅ Centang Materi yang Sudah Kamu Kuasai Hari Ini:
+                </div>
+                <label class="flex items-center gap-2.5 p-2 rounded-xl bg-white border border-amber-300 cursor-pointer text-xs sm:text-sm">
+                  <input type="checkbox" class="reflect-check w-4 h-4 accent-emerald-600" checked />
+                  <span>Aku bisa membedakan <strong>Regular Verb (+ed)</strong> dan <strong>Irregular Verb</strong> (contoh: <em>went, ate, saw</em>).</span>
+                </label>
+                <label class="flex items-center gap-2.5 p-2 rounded-xl bg-white border border-amber-300 cursor-pointer text-xs sm:text-sm">
+                  <input type="checkbox" class="reflect-check w-4 h-4 accent-emerald-600" checked />
+                  <span>Aku tahu bahwa kalimat negatif (<em>didn't</em>) dan tanya (<em>Did...?</em>) kembali memakai <strong>Verb 1</strong>.</span>
+                </label>
+                <label class="flex items-center gap-2.5 p-2 rounded-xl bg-white border border-amber-300 cursor-pointer text-xs sm:text-sm">
+                  <input type="checkbox" class="reflect-check w-4 h-4 accent-emerald-600" checked />
+                  <span>Aku paham 3 bagian <strong>Recount Text</strong>: <em>Orientation, Events,</em> dan <em>Re-orientation</em>.</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- 2. Interactive Mini A1 Recount Story Creator -->
+            <div class="bg-sky-50 border-2 border-sky-500 rounded-2xl p-4 space-y-3">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <h3 class="font-pirate font-bold text-base text-sky-950">
+                  2️⃣ Buat Cerita Recount A1-mu Sendiri! (Pilih Kata di Kotak)
+                </h3>
+                <button id="btnSpeakMyStory" type="button" class="pirate-btn bg-sky-600 hover:bg-sky-500 text-white font-pirate font-bold text-xs px-3 py-1.5 rounded-xl">
+                  🔊 Bacakan Ceritaku
+                </button>
+              </div>
+
+              <div class="space-y-2.5 text-xs sm:text-sm text-slate-800">
+                <div class="p-2.5 rounded-xl bg-white border border-sky-300">
+                  <span class="font-pirate font-bold text-amber-800 block mb-1">A. Orientation (Kapan &amp; Ke mana):</span>
+                  <div class="flex flex-wrap items-center gap-1.5">
+                    <select id="storyTime" class="story-select px-2 py-1 rounded-lg border-2 border-amber-500 bg-amber-50 font-bold">
+                      <option value="Last Sunday">Last Sunday</option>
+                      <option value="Yesterday">Yesterday</option>
+                      <option value="Last holiday">Last holiday</option>
+                      <option value="Two days ago">Two days ago</option>
+                    </select>
+                    <span>, I <strong>went</strong> to</span>
+                    <select id="storyPlace" class="story-select px-2 py-1 rounded-lg border-2 border-amber-500 bg-amber-50 font-bold">
+                      <option value="the beach">the beach</option>
+                      <option value="my grandma's house">my grandma's house</option>
+                      <option value="the city park">the city park</option>
+                      <option value="the zoo">the zoo</option>
+                    </select>
+                    <span>with</span>
+                    <select id="storyWith" class="story-select px-2 py-1 rounded-lg border-2 border-amber-500 bg-amber-50 font-bold">
+                      <option value="my family">my family</option>
+                      <option value="my best friends">my best friends</option>
+                      <option value="my brother and sister">my brother and sister</option>
+                    </select>.
+                  </div>
+                </div>
+
+                <div class="p-2.5 rounded-xl bg-white border border-sky-300">
+                  <span class="font-pirate font-bold text-sky-800 block mb-1">B. Events (Apa yang kamu lakukan - Verb 2):</span>
+                  <div class="flex flex-wrap items-center gap-1.5">
+                    <span>First, we</span>
+                    <select id="storyEvent1" class="story-select px-2 py-1 rounded-lg border-2 border-sky-500 bg-sky-50 font-bold">
+                      <option value="took many nice photos">took many nice photos</option>
+                      <option value="played games together">played games together</option>
+                      <option value="walked around happily">walked around happily</option>
+                      <option value="saw many interesting things">saw many interesting things</option>
+                    </select>.
+                    <span>Then, we</span>
+                    <select id="storyEvent2" class="story-select px-2 py-1 rounded-lg border-2 border-sky-500 bg-sky-50 font-bold">
+                      <option value="ate delicious food">ate delicious food</option>
+                      <option value="bought cold ice cream">bought cold ice cream</option>
+                      <option value="drank sweet coconut water">drank sweet coconut water</option>
+                      <option value="cooked noodles together">cooked noodles together</option>
+                    </select>.
+                  </div>
+                </div>
+
+                <div class="p-2.5 rounded-xl bg-white border border-sky-300">
+                  <span class="font-pirate font-bold text-purple-800 block mb-1">C. Re-orientation (Perasaanmu di akhir cerita):</span>
+                  <div class="flex flex-wrap items-center gap-1.5">
+                    <span>Finally, we went home in the afternoon. I <strong>felt</strong></span>
+                    <select id="storyFeeling" class="story-select px-2 py-1 rounded-lg border-2 border-purple-500 bg-purple-50 font-bold">
+                      <option value="very happy and excited">very happy and excited</option>
+                      <option value="tired but very happy">tired but very happy</option>
+                      <option value="great and thankful">great and thankful</option>
+                    </select>!
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Touch Signature Pad & Captain Certificate -->
+          <div class="lg:col-span-5 flex flex-col justify-between space-y-4">
+            <!-- Touch Signature Canvas -->
+            <div class="bg-amber-100 border-2 border-amber-500 rounded-2xl p-4 space-y-2">
+              <div class="flex items-center justify-between">
+                <h3 class="font-pirate font-bold text-sm sm:text-base text-amber-950">
+                  ✍️ 3️⃣ Goreskan Tanda Tangan / Simbol Kaptenmu di Sini:
+                </h3>
+                <button id="btnClearSign" type="button" class="pirate-btn bg-amber-700 text-white text-xs font-pirate px-2.5 py-1 rounded-lg">
+                  Hapus
+                </button>
+              </div>
+              <div class="rounded-xl overflow-hidden border-2 border-amber-600 bg-white h-28 relative">
+                <canvas id="signCanvas" class="w-full h-full block cursor-crosshair touch-none"></canvas>
+              </div>
+              <p class="text-[11px] text-amber-800">Gunakan jari (touchscreen) atau mouse untuk menandatangani sertifikatmu.</p>
+            </div>
+
+            <!-- Final Captain Certificate Preview -->
+            <div id="certificateCard" class="bg-gradient-to-b from-amber-50 via-yellow-50 to-amber-100 border-4 border-amber-700 rounded-2xl p-4 shadow-lg space-y-2.5 relative">
+              <div class="flex items-center justify-between border-b-2 border-amber-400 pb-2">
+                <div class="flex items-center gap-2">
+                  <span id="certAvatar" class="text-3xl">🏴‍☠️</span>
+                  <div>
+                    <div class="text-[11px] font-pirate font-bold uppercase text-amber-800">PIRATE CAPTAIN CERTIFICATE</div>
+                    <h4 id="certName" class="font-pirate font-bold text-lg text-amber-950">Capt. Student</h4>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <span id="certClass" class="bg-amber-800 text-amber-100 font-pirate text-xs px-2.5 py-0.5 rounded-full">Kelas 8A</span>
+                  <div id="certCoins" class="font-pirate font-bold text-amber-700 text-sm mt-0.5">🪙 0 Gold</div>
+                </div>
+              </div>
+
+              <div class="bg-white/90 border border-amber-300 rounded-xl p-2.5">
+                <div class="text-[11px] font-pirate font-bold text-sky-800 uppercase">📖 My A1 Recount Story:</div>
+                <p id="certStoryPreview" class="text-xs sm:text-sm text-slate-800 italic mt-1 leading-relaxed"></p>
+              </div>
+
+              <div class="flex items-center justify-between text-xs text-amber-900 pt-1">
+                <div>
+                  <span class="font-bold">Refleksi:</span> <span id="certMoodText">Sangat Senang &amp; Paham! 🤩</span>
+                </div>
+                <span class="font-pirate font-bold text-emerald-700">⭐ LULUS MISI RECOUNT</span>
+              </div>
+            </div>
+
+            <button id="btnSaveReflection" type="button" class="w-full pirate-btn pulse-gold bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-pirate font-bold py-3.5 px-5 rounded-2xl text-base shadow-lg">
+              🎉 Klaim Piala Kapten &amp; Simpan Refleksi (+100 🪙)
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ========================================== -->
+  <!-- MODAL: KAMUS SAKU A1 (VOCABULARY HELPER)   -->
+  <!-- ========================================== -->
+  <div id="modalVocab" class="hidden fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="parchment-card rounded-3xl max-w-2xl w-full p-5 sm:p-6 max-h-[85vh] flex flex-col">
+      <div class="flex items-center justify-between border-b-2 border-amber-400 pb-3 mb-3">
+        <h3 class="font-pirate font-bold text-lg sm:text-xl text-amber-950 flex items-center gap-2">
+          <span>📖</span> Kamus Saku Bajak Laut (Kosakata Bahasa Inggris Level A1)
+        </h3>
+        <button id="btnCloseVocab" class="pirate-btn bg-red-600 text-white font-pirate font-bold px-3 py-1 rounded-xl text-sm">
+          ✕ Tutup
+        </button>
+      </div>
+      <div class="overflow-y-auto space-y-3 pr-1 text-xs sm:text-sm">
+        <div class="bg-amber-100 p-3 rounded-xl border border-amber-400">
+          <div class="font-pirate font-bold text-amber-950 mb-1">⏰ Keterangan Waktu Masa Lalu (Time Signals):</div>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            <div>• <strong>yesterday</strong> = kemarin</div>
+            <div>• <strong>last Sunday</strong> = Minggu lalu</div>
+            <div>• <strong>last week</strong> = minggu lalu</div>
+            <div>• <strong>last holiday</strong> = liburan lalu</div>
+            <div>• <strong>two days ago</strong> = 2 hari lalu</div>
+            <div>• <strong>this morning</strong> = tadi pagi</div>
+          </div>
+        </div>
+        <div class="bg-emerald-50 p-3 rounded-xl border border-emerald-400">
+          <div class="font-pirate font-bold text-emerald-950 mb-1">🛠️ Regular Verbs (Kata Kerja Beraturan +ed):</div>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            <div>• <strong>walk ➔ walked</strong> (berjalan)</div>
+            <div>• <strong>play ➔ played</strong> (bermain)</div>
+            <div>• <strong>cook ➔ cooked</strong> (memasak)</div>
+            <div>• <strong>visit ➔ visited</strong> (mengunjungi)</div>
+            <div>• <strong>watch ➔ watched</strong> (menonton)</div>
+            <div>• <strong>help ➔ helped</strong> (membantu)</div>
+          </div>
+        </div>
+        <div class="bg-purple-50 p-3 rounded-xl border border-purple-400">
+          <div class="font-pirate font-bold text-purple-950 mb-1">👑 Irregular Verbs (Kata Kerja Tak Beraturan):</div>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            <div>• <strong>go ➔ went</strong> (pergi)</div>
+            <div>• <strong>eat ➔ ate</strong> (makan)</div>
+            <div>• <strong>drink ➔ drank</strong> (minum)</div>
+            <div>• <strong>see ➔ saw</strong> (melihat)</div>
+            <div>• <strong>buy ➔ bought</strong> (membeli)</div>
+            <div>• <strong>take ➔ took</strong> (mengambil)</div>
+            <div>• <strong>find ➔ found</strong> (menemukan)</div>
+            <div>• <strong>swim ➔ swam</strong> (berenang)</div>
+            <div>• <strong>feel ➔ felt</strong> (merasa)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PARROT VOICE READER BAR (VISUAL & AUDIO PRONUNCIATION FEEDBACK) -->
+  <div id="parrotVoiceBar" class="hidden fixed bottom-4 left-4 z-50 wood-panel text-amber-100 px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3 max-w-md border-2 border-amber-400">
+    <div class="text-3xl animate-bounce">🦜</div>
+    <div class="flex-1 min-w-0">
+      <div class="text-[11px] font-pirate font-bold text-amber-300 uppercase flex items-center justify-between gap-2">
+        <span>🔊 Parrot English Reader (Level A1)</span>
+        <span id="parrotAudioStatus" class="text-emerald-300">● Playing Audio</span>
+      </div>
+      <div id="parrotVoiceText" class="font-pirate font-bold text-sm sm:text-base text-white mt-0.5 leading-snug break-words"></div>
+    </div>
+    <button id="btnStopParrot" type="button" class="pirate-btn bg-red-600 hover:bg-red-500 text-white font-pirate font-bold text-xs px-2.5 py-1 rounded-lg">
+      ⏹
+    </button>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="pirateToast" class="hidden fixed bottom-4 right-4 z-50 wood-panel text-amber-100 px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-2.5 max-w-sm">
+    <span id="toastIcon" class="text-2xl">🪙</span>
+    <span id="toastText" class="font-pirate font-semibold text-sm"></span>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- JAVASCRIPT ENGINE                          -->
+  <!-- ========================================== -->
+  <script>
+    (function () {
+      "use strict";
+
+      // ------------------------------
+      // 1. STATE & SOUND ENGINE (WEB AUDIO API)
+      // ------------------------------
+      const state = {
+        studentName: "",
+        studentClass: "8A",
+        avatar: "🏴‍☠️",
+        avatarTitle: "Capt. Jack",
+        coins: 0,
+        completedLevels: { 1: false, 2: false, 3: false, 4: false, 5: false },
+        bgmEnabled: true,
+        sfxEnabled: true,
+        currentScreen: "login",
+        shipX: 90,
+        shipY: 140,
+        targetShipX: 90,
+        targetShipY: 140,
+        selectedCoinId: null,
+        flippedCards: {},
+        builderSolved: { 0: false, 1: false, 2: false },
+        scratchCleared: false,
+        cannonQIndex: 0,
+        cannonScore: 0,
+        cannonAnswered: false,
+        bridgeIndex: 0,
+        bridgeSelectedWords: [],
+        detectiveSolved: {},
+        mood: "Sangat Senang & Paham! 🤩",
+        reflectionSaved: false
+      };
+
+      let audioCtx = null;
+      let masterCompressor = null;
+      let bgmTimer = null;
+      let bgmStep = 0;
+      let cachedVoices = [];
+      let parrotTimers = [];
+      let currentTtsAudio = null;
+
+      function ensureAudio() {
+        try {
+          if (!audioCtx) {
+            const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+            if (AudioContextClass) {
+              audioCtx = new AudioContextClass();
+              masterCompressor = audioCtx.createDynamicsCompressor();
+              masterCompressor.threshold.setValueAtTime(-18, audioCtx.currentTime);
+              masterCompressor.knee.setValueAtTime(20, audioCtx.currentTime);
+              masterCompressor.ratio.setValueAtTime(6, audioCtx.currentTime);
+              masterCompressor.attack.setValueAtTime(0.005, audioCtx.currentTime);
+              masterCompressor.release.setValueAtTime(0.15, audioCtx.currentTime);
+              masterCompressor.connect(audioCtx.destination);
+            }
+          }
+          if (audioCtx && audioCtx.state === "suspended") {
+            audioCtx.resume();
+          }
+        } catch (e) {}
+      }
+
+      // Unlock Web Audio & preload voices on first user gesture anywhere
+      ["pointerdown", "touchstart", "click", "keydown"].forEach((evtName) => {
+        document.addEventListener(evtName, () => {
+          ensureAudio();
+          loadSpeechVoices();
+        }, { passive: true });
+      });
+
+      function loadSpeechVoices() {
+        try {
+          if ("speechSynthesis" in window) {
+            const v = window.speechSynthesis.getVoices();
+            if (v && v.length > 0) cachedVoices = v;
+          }
+        } catch (e) {}
+      }
+      if ("speechSynthesis" in window) {
+        loadSpeechVoices();
+        if (window.speechSynthesis.onvoiceschanged !== undefined) {
+          window.speechSynthesis.onvoiceschanged = loadSpeechVoices;
+        }
+      }
+
+      function playTone(freq, type, duration, delay, gainVal) {
+        if (!state.sfxEnabled) return;
+        try {
+          ensureAudio();
+          if (!audioCtx) return;
+          const now = audioCtx.currentTime + (delay || 0);
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = type || "triangle";
+          osc.frequency.setValueAtTime(freq, now);
+          const peak = Math.min(0.6, (gainVal || 0.28) * 1.8);
+          gain.gain.setValueAtTime(0.001, now);
+          gain.gain.linearRampToValueAtTime(peak, now + 0.015);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+          osc.connect(gain);
+          gain.connect(masterCompressor || audioCtx.destination);
+          osc.start(now);
+          osc.stop(now + duration + 0.02);
+        } catch (e) {}
+      }
+
+      function playNoiseBurst(duration, gainVal) {
+        if (!state.sfxEnabled) return;
+        try {
+          ensureAudio();
+          if (!audioCtx) return;
+          const bufferSize = Math.floor(audioCtx.sampleRate * duration);
+          const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+          const data = buffer.getChannelData(0);
+          for (let i = 0; i < bufferSize; i++) {
+            data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.35));
+          }
+          const noise = audioCtx.createBufferSource();
+          noise.buffer = buffer;
+          const filter = audioCtx.createBiquadFilter();
+          filter.type = "lowpass";
+          filter.frequency.setValueAtTime(650, audioCtx.currentTime);
+          const gain = audioCtx.createGain();
+          gain.gain.setValueAtTime(gainVal || 0.45, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+          noise.connect(filter);
+          filter.connect(gain);
+          gain.connect(masterCompressor || audioCtx.destination);
+          noise.start();
+        } catch (e) {}
+      }
+
+      function playSfx(kind) {
+        if (!state.sfxEnabled) return;
+        ensureAudio();
+        if (kind === "click") {
+          playTone(587.33, "triangle", 0.09, 0, 0.25);
+          playTone(880, "sine", 0.07, 0.03, 0.2);
+        } else if (kind === "coin") {
+          playTone(987.77, "square", 0.1, 0, 0.3);
+          playTone(1318.51, "triangle", 0.28, 0.08, 0.35);
+        } else if (kind === "correct") {
+          playTone(523.25, "triangle", 0.14, 0, 0.32);
+          playTone(659.25, "triangle", 0.14, 0.11, 0.32);
+          playTone(783.99, "triangle", 0.14, 0.22, 0.32);
+          playTone(1046.5, "triangle", 0.32, 0.33, 0.36);
+        } else if (kind === "wrong") {
+          playTone(233.08, "sawtooth", 0.2, 0, 0.3);
+          playTone(174.61, "sawtooth", 0.32, 0.18, 0.32);
+        } else if (kind === "cannon") {
+          playNoiseBurst(0.45, 0.55);
+          playTone(120, "sawtooth", 0.38, 0, 0.45);
+          playTone(65, "square", 0.45, 0.04, 0.45);
+        } else if (kind === "fanfare") {
+          const notes = [523.25, 659.25, 783.99, 1046.5, 783.99, 1046.5];
+          const durs = [0.14, 0.14, 0.14, 0.22, 0.14, 0.38];
+          let t = 0;
+          notes.forEach((n, idx) => {
+            playTone(n, "triangle", durs[idx], t, 0.35);
+            playTone(n * 0.5, "sine", durs[idx], t, 0.22);
+            t += durs[idx] * 0.85;
+          });
+        }
+      }
+
+      // Cheerful Pirate Sea Shanty Chiptune Loop (Melody + Bass)
+      const shantyNotes = [
+        { m: 293.66, b: 146.83 }, { m: 349.23, b: 0 }, { m: 440.0, b: 220.0 }, { m: 440.0, b: 0 },
+        { m: 440.0, b: 146.83 }, { m: 523.25, b: 0 }, { m: 466.16, b: 233.08 }, { m: 440.0, b: 0 },
+        { m: 392.0, b: 196.0 }, { m: 440.0, b: 0 }, { m: 349.23, b: 174.61 }, { m: 293.66, b: 0 },
+        { m: 329.63, b: 164.81 }, { m: 349.23, b: 0 }, { m: 293.66, b: 146.83 }, { m: 0, b: 146.83 }
+      ];
+
+      function startBgm() {
+        if (bgmTimer) clearInterval(bgmTimer);
+        bgmTimer = setInterval(() => {
+          if (!state.bgmEnabled) return;
+          try {
+            ensureAudio();
+            if (!audioCtx || audioCtx.state !== "running") return;
+            const stepObj = shantyNotes[bgmStep % shantyNotes.length];
+            bgmStep++;
+            const now = audioCtx.currentTime;
+            if (stepObj.m > 0) {
+              const osc = audioCtx.createOscillator();
+              const gain = audioCtx.createGain();
+              osc.type = "triangle";
+              osc.frequency.setValueAtTime(stepObj.m, now);
+              gain.gain.setValueAtTime(0.11, now);
+              gain.gain.exponentialRampToValueAtTime(0.001, now + 0.23);
+              osc.connect(gain);
+              gain.connect(masterCompressor || audioCtx.destination);
+              osc.start(now);
+              osc.stop(now + 0.24);
+            }
+            if (stepObj.b > 0) {
+              const bOsc = audioCtx.createOscillator();
+              const bGain = audioCtx.createGain();
+              bOsc.type = "sine";
+              bOsc.frequency.setValueAtTime(stepObj.b, now);
+              bGain.gain.setValueAtTime(0.09, now);
+              bGain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+              bOsc.connect(bGain);
+              bGain.connect(masterCompressor || audioCtx.destination);
+              bOsc.start(now);
+              bOsc.stop(now + 0.26);
+            }
+          } catch (e) {}
+        }, 270);
+      }
+
+      function clearParrotTimers() {
+        parrotTimers.forEach((id) => clearTimeout(id));
+        parrotTimers = [];
+        if (currentTtsAudio) {
+          try {
+            currentTtsAudio.pause();
+            currentTtsAudio = null;
+          } catch (e) {}
+        }
+      }
+
+      function stopParrotReader() {
+        clearParrotTimers();
+        try {
+          if ("speechSynthesis" in window) {
+            window.speechSynthesis.cancel();
+          }
+        } catch (e) {}
+        const bar = document.getElementById("parrotVoiceBar");
+        if (bar) bar.classList.add("hidden");
+      }
+
+      // Speaks English aloud using Web Speech API + Karaoke Word Highlighting + Guaranteed Web Audio Voice Cadence
+      function speakEnglish(text) {
+        ensureAudio();
+        clearParrotTimers();
+
+        const cleanText = String(text || "").trim();
+        if (!cleanText) return;
+
+        // Show Parrot Reader Bar with word spans
+        const bar = document.getElementById("parrotVoiceBar");
+        const textContainer = document.getElementById("parrotVoiceText");
+        const statusEl = document.getElementById("parrotAudioStatus");
+        const words = cleanText.split(/\s+/);
+
+        if (bar && textContainer) {
+          bar.classList.remove("hidden");
+          statusEl.textContent = "🔊 Membacakan...";
+          textContainer.innerHTML = words
+            .map((w, i) => `<span id="parrotWord_${i}" class="inline-block px-1 rounded transition">${w}</span>`)
+            .join(" ");
+        }
+
+        // Play immediate cheerful start chime
+        playTone(659.25, "triangle", 0.1, 0, 0.28);
+        playTone(880.0, "triangle", 0.14, 0.08, 0.28);
+
+        let nativeSpeechStarted = false;
+
+        // 1. Try Browser Web Speech API (with Chrome cancel workaround)
+        try {
+          if ("speechSynthesis" in window && typeof SpeechSynthesisUtterance !== "undefined") {
+            if (window.speechSynthesis.speaking || window.speechSynthesis.pending) {
+              window.speechSynthesis.cancel();
+            }
+            window.speechSynthesis.resume();
+
+            const startUtter = () => {
+              try {
+                const utter = new SpeechSynthesisUtterance(cleanText);
+                utter.lang = "en-US";
+                utter.rate = 0.88;
+                utter.pitch = 1.05;
+                utter.volume = 1.0;
+
+                const voices = cachedVoices.length ? cachedVoices : window.speechSynthesis.getVoices();
+                const enVoice =
+                  voices.find((v) => v.lang === "en-US" && v.localService) ||
+                  voices.find((v) => v.lang && v.lang.toLowerCase().startsWith("en-us")) ||
+                  voices.find((v) => v.lang && v.lang.toLowerCase().startsWith("en"));
+                if (enVoice) utter.voice = enVoice;
+
+                utter.onstart = () => {
+                  nativeSpeechStarted = true;
+                };
+                utter.onend = () => {
+                  if (statusEl) statusEl.textContent = "✅ Selesai Dibaca";
+                };
+                window.speechSynthesis.speak(utter);
+              } catch (err) {}
+            };
+            const tId = setTimeout(startUtter, 45);
+            parrotTimers.push(tId);
+          }
+        } catch (e) {}
+
+        // 2. Synchronized Word-by-Word Karaoke Highlighting + Audible Melodic Syllable Tones
+        // Ensures clear, engaging audio feedback even in sandboxed iframes or devices without OS TTS voices
+        const speechScale = [523.25, 587.33, 659.25, 698.46, 783.99, 880.0, 659.25, 587.33];
+        words.forEach((word, idx) => {
+          const delayMs = 160 + idx * 310;
+          const timerId = setTimeout(() => {
+            // Highlight current word
+            words.forEach((_, j) => {
+              const el = document.getElementById("parrotWord_" + j);
+              if (el) {
+                if (j === idx) {
+                  el.className = "inline-block px-1.5 py-0.5 rounded bg-amber-400 text-amber-950 font-extrabold scale-105 transition";
+                } else if (j < idx) {
+                  el.className = "inline-block px-1 rounded text-amber-200 transition";
+                } else {
+                  el.className = "inline-block px-1 rounded text-white transition";
+                }
+              }
+            });
+
+            // Play gentle musical speech tone for each word (louder if native speech didn't fire)
+            const charCodeSum = word.split("").reduce((acc, c) => acc + c.charCodeAt(0), 0);
+            const noteFreq = speechScale[charCodeSum % speechScale.length];
+            const toneGain = nativeSpeechStarted ? 0.08 : 0.26;
+            playTone(noteFreq, "sine", 0.16, 0, toneGain);
+            if (!nativeSpeechStarted && word.length > 4) {
+              playTone(noteFreq * 1.12, "triangle", 0.12, 0.09, toneGain * 0.85);
+            }
+          }, delayMs);
+          parrotTimers.push(timerId);
+        });
+
+        // Finish & hide after reading
+        const totalDuration = 250 + words.length * 310;
+        const endTimer = setTimeout(() => {
+          if (statusEl) statusEl.textContent = "✅ Selesai";
+          playTone(783.99, "triangle", 0.12, 0, 0.22);
+          playTone(1046.5, "triangle", 0.2, 0.1, 0.25);
+        }, totalDuration);
+        const hideTimer = setTimeout(() => {
+          if (bar) bar.classList.add("hidden");
+        }, totalDuration + 2600);
+        parrotTimers.push(endTimer, hideTimer);
+      }
+
+      // ------------------------------
+      // 2. UI HELPERS & NAVIGATION
+      // ------------------------------
+      let toastTimeout = null;
+      function showToast(icon, message) {
+        const toast = document.getElementById("pirateToast");
+        document.getElementById("toastIcon").textContent = icon;
+        document.getElementById("toastText").textContent = message;
+        toast.classList.remove("hidden");
+        if (toastTimeout) clearTimeout(toastTimeout);
+        toastTimeout = setTimeout(() => {
+          toast.classList.add("hidden");
+        }, 3200);
+      }
+
+      function addCoins(amount, reason) {
+        state.coins += amount;
+        updateHud();
+        playSfx("coin");
+        showToast("🪙", `+${amount} Gold Coins! (${reason})`);
+      }
+
+      function markLevelCompleted(lvl) {
+        if (!state.completedLevels[lvl]) {
+          state.completedLevels[lvl] = true;
+          addCoins(50, `Level ${lvl} Selesai!`);
+          playSfx("fanfare");
+        }
+        updateHud();
+      }
+
+      function updateHud() {
+        document.getElementById("hudName").textContent = "Capt. " + (state.studentName || "Student");
+        document.getElementById("hudClass").textContent = "Kelas " + state.studentClass;
+        document.getElementById("hudAvatar").textContent = state.avatar;
+        document.getElementById("hudCoins").textContent = state.coins;
+
+        const doneCount = Object.values(state.completedLevels).filter(Boolean).length;
+        document.getElementById("hudStars").textContent = `${doneCount}/5`;
+
+        for (let i = 1; i <= 5; i++) {
+          const badge = document.getElementById("badgeLvl" + i);
+          if (badge) {
+            if (state.completedLevels[i]) {
+              badge.textContent = "⭐ Selesai";
+              badge.className = "text-xs font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full";
+            } else {
+              badge.textContent = "🔓 Siap";
+              badge.className = "text-xs font-bold text-amber-800";
+            }
+          }
+        }
+
+        // Update certificate preview
+        document.getElementById("certAvatar").textContent = state.avatar;
+        document.getElementById("certName").textContent = "Capt. " + (state.studentName || "Student");
+        document.getElementById("certClass").textContent = "Kelas " + state.studentClass;
+        document.getElementById("certCoins").textContent = `🪙 ${state.coins} Gold Coins`;
+      }
+
+      function showScreen(screenKey) {
+        state.currentScreen = screenKey;
+        const screens = {
+          login: "screenLogin",
+          map: "screenMap",
+          level1: "screenLevel1",
+          level2: "screenLevel2",
+          level3: "screenLevel3",
+          level4: "screenLevel4",
+          level5: "screenLevel5"
+        };
+        Object.entries(screens).forEach(([key, id]) => {
+          const el = document.getElementById(id);
+          if (el) {
+            if (key === screenKey) el.classList.remove("hidden");
+            else el.classList.add("hidden");
+          }
+        });
+
+        const hud = document.getElementById("hudBar");
+        if (screenKey === "login") {
+          hud.classList.add("hidden");
+        } else {
+          hud.classList.remove("hidden");
+        }
+
+        window.scrollTo({ top: 0, behavior: "smooth" });
+
+        // Resize relevant canvases after showing
+        setTimeout(() => {
+          if (screenKey === "map") resizeMapCanvas();
+          if (screenKey === "level2") initScratchCanvas();
+          if (screenKey === "level3") resizeCannonCanvas();
+          if (screenKey === "level5") {
+            initSignCanvas();
+            updateStoryPreview();
+          }
+        }, 60);
+      }
+
+      // ------------------------------
+      // 3. LOGIN & AVATAR SELECTION
+      // ------------------------------
+      const selectPreset = document.getElementById("selectClassPreset");
+
+      function setSelectedClass(clsVal) {
+        state.studentClass = clsVal;
+        selectPreset.value = clsVal;
+        document.querySelectorAll(".class-pill-btn").forEach((btn) => {
+          const isSelected = btn.getAttribute("data-class-val") === clsVal;
+          btn.className = isSelected
+            ? "class-pill-btn pirate-btn py-1.5 rounded-lg font-pirate font-bold text-xs bg-amber-500 text-amber-950 border-2 border-amber-800 ring-2 ring-amber-400"
+            : "class-pill-btn pirate-btn py-1.5 rounded-lg font-pirate font-bold text-xs bg-white text-amber-950 border-2 border-amber-400";
+        });
+      }
+
+      selectPreset.addEventListener("change", () => {
+        setSelectedClass(selectPreset.value);
+        playSfx("click");
+      });
+
+      document.querySelectorAll(".class-pill-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          setSelectedClass(btn.getAttribute("data-class-val"));
+          playSfx("click");
+        });
+      });
+
+      document.getElementById("btnTestAudioLogin").addEventListener("click", () => {
+        state.sfxEnabled = true;
+        playSfx("fanfare");
+        speakEnglish("Ahoy Captain! Welcome to Pirate Recount Quest! Let's sail and learn English!");
+      });
+
+      document.getElementById("btnStopParrot").addEventListener("click", () => {
+        stopParrotReader();
+      });
+
+      document.querySelectorAll(".avatar-choice").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          playSfx("click");
+          document.querySelectorAll(".avatar-choice").forEach((b) => {
+            b.classList.remove("ring-4", "ring-amber-500", "bg-amber-200", "border-amber-600");
+            b.classList.add("bg-white", "border-amber-300");
+          });
+          btn.classList.remove("bg-white", "border-amber-300");
+          btn.classList.add("ring-4", "ring-amber-500", "bg-amber-200", "border-amber-600");
+          state.avatar = btn.getAttribute("data-avatar");
+          state.avatarTitle = btn.getAttribute("data-title");
+        });
+      });
+
+      document.getElementById("btnStartAdventure").addEventListener("click", () => {
+        const nameVal = document.getElementById("inputStudentName").value.trim();
+        const classVal = document.getElementById("selectClassPreset").value || "8A";
+        const errBox = document.getElementById("loginErrorMsg");
+
+        if (!nameVal) {
+          errBox.classList.remove("hidden");
+          playSfx("wrong");
+          document.getElementById("inputStudentName").focus();
+          return;
+        }
+        errBox.classList.add("hidden");
+        state.studentName = nameVal;
+        state.studentClass = classVal;
+        ensureAudio();
+        playSfx("fanfare");
+        startBgm();
+        updateHud();
+        showScreen("map");
+        showToast("⛵", `Selamat datang di kapal, Capt. ${state.studentName} (${state.studentClass})!`);
+      });
+
+      // Allow Enter key on login name input
+      document.getElementById("inputStudentName").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          document.getElementById("btnStartAdventure").click();
+        }
+      });
+
+      // ------------------------------
+      // 4. INTERACTIVE PIRATE MAP CANVAS
+      // ------------------------------
+      const mapCanvas = document.getElementById("mapCanvas");
+      const mapCtx = mapCanvas.getContext("2d");
+      const islands = [
+        { id: 1, name: "1. Past Tense", xPct: 0.14, yPct: 0.55, color: "#f59e0b", icon: "🏝️" },
+        { id: 2, name: "2. Recount Scroll", xPct: 0.32, yPct: 0.28, color: "#10b981", icon: "📜" },
+        { id: 3, name: "3. Cannon Battle", xPct: 0.52, yPct: 0.62, color: "#ef4444", icon: "💣" },
+        { id: 4, name: "4. Kraken Sea", xPct: 0.72, yPct: 0.30, color: "#8b5cf6", icon: "🐙" },
+        { id: 5, name: "5. Logbook & Trophy", xPct: 0.88, yPct: 0.58, color: "#0ea5e9", icon: "🏆" }
+      ];
+      let mapWaveOffset = 0;
+      let draggingShip = false;
+
+      function resizeMapCanvas() {
+        const rect = mapCanvas.parentElement.getBoundingClientRect();
+        if (rect.width === 0) return;
+        mapCanvas.width = rect.width;
+        mapCanvas.height = rect.height;
+        const firstIsland = islands[0];
+        if (state.shipX === 90 && state.shipY === 140) {
+          state.shipX = firstIsland.xPct * mapCanvas.width;
+          state.shipY = firstIsland.yPct * mapCanvas.height;
+          state.targetShipX = state.shipX;
+          state.targetShipY = state.shipY;
+        }
+      }
+
+      function drawMapCanvas() {
+        if (state.currentScreen === "map" && mapCanvas.width > 0) {
+          const w = mapCanvas.width;
+          const h = mapCanvas.height;
+          mapCtx.clearRect(0, 0, w, h);
+
+          // Sea background gradient
+          const grad = mapCtx.createLinearGradient(0, 0, 0, h);
+          grad.addColorStop(0, "#075985");
+          grad.addColorStop(0.5, "#0284c7");
+          grad.addColorStop(1, "#0c4a6e");
+          mapCtx.fillStyle = grad;
+          mapCtx.fillRect(0, 0, w, h);
+
+          // Animated wave lines
+          mapWaveOffset += 0.03;
+          mapCtx.strokeStyle = "rgba(186, 230, 253, 0.22)";
+          mapCtx.lineWidth = 2;
+          for (let row = 35; row < h; row += 45) {
+            mapCtx.beginPath();
+            for (let x = 0; x <= w; x += 20) {
+              const y = row + Math.sin(x * 0.03 + mapWaveOffset + row) * 5;
+              if (x === 0) mapCtx.moveTo(x, y);
+              else mapCtx.lineTo(x, y);
+            }
+            mapCtx.stroke();
+          }
+
+          // Dashed treasure route connecting islands
+          mapCtx.save();
+          mapCtx.setLineDash([8, 6]);
+          mapCtx.strokeStyle = "#fde68a";
+          mapCtx.lineWidth = 3;
+          mapCtx.beginPath();
+          islands.forEach((isl, idx) => {
+            const ix = isl.xPct * w;
+            const iy = isl.yPct * h;
+            if (idx === 0) mapCtx.moveTo(ix, iy);
+            else mapCtx.lineTo(ix, iy);
+          });
+          mapCtx.stroke();
+          mapCtx.restore();
+
+          // Draw each island
+          islands.forEach((isl) => {
+            const ix = isl.xPct * w;
+            const iy = isl.yPct * h;
+            const radius = Math.min(w, h) * 0.11;
+
+            // Sandy base
+            mapCtx.beginPath();
+            mapCtx.arc(ix, iy, radius, 0, Math.PI * 2);
+            mapCtx.fillStyle = "#fde68a";
+            mapCtx.fill();
+            mapCtx.lineWidth = 4;
+            mapCtx.strokeStyle = state.completedLevels[isl.id] ? "#22c55e" : isl.color;
+            mapCtx.stroke();
+
+            // Inner greenery
+            mapCtx.beginPath();
+            mapCtx.arc(ix, iy, radius * 0.72, 0, Math.PI * 2);
+            mapCtx.fillStyle = state.completedLevels[isl.id] ? "#bbf7d0" : "#fef3c7";
+            mapCtx.fill();
+
+            // Icon
+            mapCtx.font = `${Math.max(18, Math.floor(radius * 0.8))}px sans-serif`;
+            mapCtx.textAlign = "center";
+            mapCtx.textBaseline = "middle";
+            mapCtx.fillText(isl.icon, ix, iy - 2);
+
+            // Label pill
+            mapCtx.font = "bold 12px Fredoka, sans-serif";
+            const textWidth = mapCtx.measureText(isl.name).width + 14;
+            mapCtx.fillStyle = "rgba(15, 23, 42, 0.85)";
+            mapCtx.fillRect(ix - textWidth / 2, iy + radius + 5, textWidth, 20);
+            mapCtx.fillStyle = "#fef08a";
+            mapCtx.fillText(isl.name, ix, iy + radius + 15);
+          });
+
+          // Smooth ship movement toward target
+          state.shipX += (state.targetShipX - state.shipX) * 0.12;
+          state.shipY += (state.targetShipY - state.shipY) * 0.12;
+
+          // Draw Player Pirate Ship
+          mapCtx.save();
+          mapCtx.translate(state.shipX, state.shipY - 12);
+          mapCtx.fillStyle = "#78350f";
+          mapCtx.beginPath();
+          mapCtx.moveTo(-18, 6);
+          mapCtx.lineTo(18, 6);
+          mapCtx.lineTo(12, 16);
+          mapCtx.lineTo(-12, 16);
+          mapCtx.closePath();
+          mapCtx.fill();
+
+          // Sail
+          mapCtx.fillStyle = "#ffffff";
+          mapCtx.beginPath();
+          mapCtx.moveTo(0, -16);
+          mapCtx.lineTo(15, 4);
+          mapCtx.lineTo(-12, 4);
+          mapCtx.closePath();
+          mapCtx.fill();
+          mapCtx.strokeStyle = "#ef4444";
+          mapCtx.lineWidth = 2;
+          mapCtx.stroke();
+          mapCtx.restore();
+        }
+        requestAnimationFrame(drawMapCanvas);
+      }
+      requestAnimationFrame(drawMapCanvas);
+
+      function handleMapPointer(clientX, clientY, isClickRelease) {
+        const rect = mapCanvas.getBoundingClientRect();
+        const x = clientX - rect.left;
+        const y = clientY - rect.top;
+        state.targetShipX = x;
+        state.targetShipY = y;
+
+        // Check if near any island
+        for (const isl of islands) {
+          const ix = isl.xPct * mapCanvas.width;
+          const iy = isl.yPct * mapCanvas.height;
+          const dist = Math.hypot(x - ix, y - iy);
+          if (dist < Math.min(mapCanvas.width, mapCanvas.height) * 0.14) {
+            document.getElementById("mapShipStatus").textContent = `⛵ Berlayar ke ${isl.name}!`;
+            if (isClickRelease) {
+              playSfx("coin");
+              setTimeout(() => showScreen("level" + isl.id), 260);
+            }
+            break;
+          }
+        }
+      }
+
+      mapCanvas.addEventListener("mousedown", (e) => {
+        draggingShip = true;
+        handleMapPointer(e.clientX, e.clientY, false);
+      });
+      mapCanvas.addEventListener("mousemove", (e) => {
+        if (draggingShip) handleMapPointer(e.clientX, e.clientY, false);
+      });
+      mapCanvas.addEventListener("mouseup", (e) => {
+        draggingShip = false;
+        handleMapPointer(e.clientX, e.clientY, true);
+      });
+      mapCanvas.addEventListener("touchstart", (e) => {
+        draggingShip = true;
+        if (e.touches[0]) handleMapPointer(e.touches[0].clientX, e.touches[0].clientY, false);
+      }, { passive: true });
+      mapCanvas.addEventListener("touchmove", (e) => {
+        if (draggingShip && e.touches[0]) handleMapPointer(e.touches[0].clientX, e.touches[0].clientY, false);
+      }, { passive: true });
+      mapCanvas.addEventListener("touchend", (e) => {
+        draggingShip = false;
+        if (e.changedTouches[0]) handleMapPointer(e.changedTouches[0].clientX, e.changedTouches[0].clientY, true);
+      });
+
+      window.addEventListener("resize", () => {
+        if (state.currentScreen === "map") resizeMapCanvas();
+        if (state.currentScreen === "level3") resizeCannonCanvas();
+      });
+
+      // ------------------------------
+      // 5. LEVEL 1: PAST TENSE FORGE
+      // ------------------------------
+      const timeWheelExamples = [
+        {
+          presentTitle: "☀️ Every Day (Present - Verb 1)",
+          presentEn: "I walk to the beach every day.",
+          presentId: "Aku berjalan ke pantai setiap hari.",
+          pastTitle: "⏪ Yesterday (Past - Verb 2)",
+          pastEn: "I walked to the beach yesterday.",
+          pastId: "Aku berjalan ke pantai kemarin.",
+          verbPair: "walk ➔ walked (Regular +ed)"
+        },
+        {
+          presentTitle: "☀️ Every Sunday (Present - Verb 1)",
+          presentEn: "We go to Banana Island.",
+          presentId: "Kami pergi ke Pulau Pisang.",
+          pastTitle: "⏪ Last Sunday (Past - Verb 2)",
+          pastEn: "We went to Banana Island last Sunday.",
+          pastId: "Kami pergi ke Pulau Pisang Minggu lalu.",
+          verbPair: "go ➔ went (Irregular)"
+        },
+        {
+          presentTitle: "☀️ Every Morning (Present - Verb 1)",
+          presentEn: "Capt. Jack eats sweet bread.",
+          presentId: "Kapten Jack makan roti manis.",
+          pastTitle: "⏪ This Morning (Past - Verb 2)",
+          pastEn: "Capt. Jack ate sweet bread this morning.",
+          pastId: "Kapten Jack makan roti manis tadi pagi.",
+          verbPair: "eat ➔ ate (Irregular)"
+        }
+      ];
+
+      function renderTimeWheel(val) {
+        const isPast = Number(val) >= 50;
+        const badge = document.getElementById("timeWheelBadge");
+        const container = document.getElementById("timeWheelDisplay");
+
+        if (isPast) {
+          badge.textContent = "⏪ Mode: PAST TENSE (Kemarin / Masa Lalu - Verb 2!)";
+          badge.className = "bg-emerald-400 text-emerald-950 font-pirate font-bold px-3 py-1 rounded-full text-xs sm:text-sm";
+        } else {
+          badge.textContent = "☀️ Mode: PRESENT (Hari Ini - Verb 1) ➔ Geser ke Kanan!";
+          badge.className = "bg-amber-400 text-amber-950 font-pirate font-bold px-3 py-1 rounded-full text-xs sm:text-sm";
+        }
+
+        container.innerHTML = timeWheelExamples.map((item) => {
+          const title = isPast ? item.pastTitle : item.presentTitle;
+          const sentence = isPast ? item.pastEn : item.presentEn;
+          const indo = isPast ? item.pastId : item.presentId;
+          const bgClass = isPast
+            ? "bg-emerald-900/90 border-2 border-emerald-400"
+            : "bg-sky-950/90 border-2 border-amber-400/70";
+          return `
+            <div class="${bgClass} rounded-xl p-3 flex flex-col justify-between transition-all">
+              <div>
+                <div class="text-[11px] font-pirate text-amber-300">${title}</div>
+                <div class="font-pirate font-bold text-sm sm:text-base text-white mt-1">"${sentence}"</div>
+                <div class="text-xs text-sky-200 mt-1">🇮🇩 ${indo}</div>
+              </div>
+              <div class="flex items-center justify-between mt-3 pt-2 border-t border-white/15">
+                <span class="text-[11px] font-bold text-amber-300">${item.verbPair}</span>
+                <button type="button" data-speak="${sentence}" class="speak-btn bg-amber-400 hover:bg-amber-300 text-amber-950 font-pirate font-bold text-xs px-2.5 py-1 rounded-lg">
+                  🔊 Listen
+                </button>
+              </div>
+            </div>
+          `;
+        }).join("");
+      }
+
+      const timeSlider = document.getElementById("timeSlider");
+      timeSlider.addEventListener("input", (e) => {
+        renderTimeWheel(e.target.value);
+      });
+      timeSlider.addEventListener("change", () => {
+        playSfx("coin");
+      });
+
+      // 8 Verb Flip Cards Data (A1 Level)
+      const verbCardsData = [
+        { id: "v1", v1: "walk", v2: "walked", type: "Regular (+ed)", mean: "berjalan", ex: "I walked to school yesterday." },
+        { id: "v2", v1: "play", v2: "played", type: "Regular (+ed)", mean: "bermain", ex: "We played football last Sunday." },
+        { id: "v3", v1: "cook", v2: "cooked", type: "Regular (+ed)", mean: "memasak", ex: "Mother cooked fish last night." },
+        { id: "v4", v1: "visit", v2: "visited", type: "Regular (+ed)", mean: "mengunjungi", ex: "They visited Bali last month." },
+        { id: "v5", v1: "go", v2: "went", type: "Irregular", mean: "pergi", ex: "She went to the market yesterday." },
+        { id: "v6", v1: "eat", v2: "ate", type: "Irregular", mean: "makan", ex: "He ate two bananas this morning." },
+        { id: "v7", v1: "see", v2: "saw", type: "Irregular", mean: "melihat", ex: "We saw a big ship two days ago." },
+        { id: "v8", v1: "buy", v2: "bought", type: "Irregular", mean: "membeli", ex: "I bought a new book last week." }
+      ];
+
+      function renderVerbFlipCards() {
+        const grid = document.getElementById("verbFlipGrid");
+        grid.innerHTML = verbCardsData.map((c) => {
+          const isFlipped = state.flippedCards[c.id] ? "flipped" : "";
+          return `
+            <div data-card-id="${c.id}" data-speak-word="${c.v1}, ${c.v2}. ${c.ex}" class="flip-card ${isFlipped} cursor-pointer h-36 sm:h-40">
+              <div class="flip-inner relative w-full h-full">
+                <!-- Front -->
+                <div class="flip-front absolute inset-0 rounded-2xl border-3 border-amber-600 bg-gradient-to-b from-amber-100 to-amber-200 p-3 flex flex-col items-center justify-center text-center shadow">
+                  <span class="text-[11px] font-pirate font-bold bg-amber-800 text-amber-100 px-2 py-0.5 rounded-full">VERB 1 (Present)</span>
+                  <div class="font-pirate font-bold text-2xl text-amber-950 mt-2">${c.v1}</div>
+                  <div class="text-xs text-amber-800 mt-1">🇮🇩 ${c.mean}</div>
+                  <div class="text-[11px] text-amber-700 mt-2 font-semibold">👆 Sentuh untuk balik ke Verb 2</div>
+                </div>
+                <!-- Back -->
+                <div class="flip-back absolute inset-0 rounded-2xl border-3 border-emerald-600 bg-gradient-to-b from-emerald-800 to-teal-900 text-white p-3 flex flex-col items-center justify-between text-center shadow">
+                  <span class="text-[10px] font-pirate font-bold bg-amber-400 text-amber-950 px-2 py-0.5 rounded-full">${c.type}</span>
+                  <div>
+                    <div class="text-xs text-emerald-200">${c.v1} ➔</div>
+                    <div class="font-pirate font-bold text-2xl text-amber-300">${c.v2}</div>
+                  </div>
+                  <div class="text-[11px] text-emerald-100 italic leading-tight">"${c.ex}"</div>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join("");
+
+        grid.querySelectorAll(".flip-card").forEach((cardEl) => {
+          cardEl.addEventListener("click", () => {
+            const cid = cardEl.getAttribute("data-card-id");
+            const phrase = cardEl.getAttribute("data-speak-word");
+            cardEl.classList.toggle("flipped");
+            speakEnglish(phrase);
+            if (!state.flippedCards[cid]) {
+              state.flippedCards[cid] = true;
+              const count = Object.keys(state.flippedCards).length;
+              document.getElementById("flippedCountText").textContent = `${count}/8`;
+              if (count === 8) {
+                addCoins(25, "Semua Kartu Verb 2 Terbuka!");
+              }
+            }
+          });
+        });
+      }
+
+      // Level 1 Tab 2: Treasure Chest Sorting (Drag & Touch Tap)
+      const chestCoinsData = [
+        { id: "c1", label: "played", type: "regular", v1: "play" },
+        { id: "c2", label: "went", type: "irregular", v1: "go" },
+        { id: "c3", label: "cooked", type: "regular", v1: "cook" },
+        { id: "c4", label: "ate", type: "irregular", v1: "eat" },
+        { id: "c5", label: "visited", type: "regular", v1: "visit" },
+        { id: "c6", label: "saw", type: "irregular", v1: "see" },
+        { id: "c7", label: "walked", type: "regular", v1: "walk" },
+        { id: "c8", label: "bought", type: "irregular", v1: "buy" }
+      ];
+      let chestPlacements = {}; // coinId -> 'regular' | 'irregular'
+
+      function renderChestSorting() {
+        const pool = document.getElementById("coinPool");
+        const regBox = document.getElementById("chestRegularItems");
+        const irregBox = document.getElementById("chestIrregularItems");
+        pool.innerHTML = "";
+        regBox.innerHTML = "";
+        irregBox.innerHTML = "";
+
+        let placedCount = 0;
+        chestCoinsData.forEach((coin) => {
+          const placedIn = chestPlacements[coin.id];
+          const isSelected = state.selectedCoinId === coin.id;
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.draggable = true;
+          btn.setAttribute("data-coin-id", coin.id);
+          btn.className = `pirate-btn px-3.5 py-2 rounded-full font-pirate font-bold text-sm flex items-center gap-1.5 border-2 ${
+            isSelected
+              ? "bg-yellow-300 text-amber-950 border-white ring-4 ring-amber-400 scale-105"
+              : "bg-amber-400 hover:bg-amber-300 text-amber-950 border-amber-700"
+          }`;
+          btn.innerHTML = `<span>🪙</span><span>${coin.label}</span>`;
+
+          // Click/Tap handler
+          btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            playSfx("click");
+            if (chestPlacements[coin.id]) {
+              delete chestPlacements[coin.id];
+              state.selectedCoinId = null;
+              renderChestSorting();
+              return;
+            }
+            state.selectedCoinId = state.selectedCoinId === coin.id ? null : coin.id;
+            renderChestSorting();
+          });
+
+          // Drag start
+          btn.addEventListener("dragstart", (e) => {
+            state.selectedCoinId = coin.id;
+            e.dataTransfer.setData("text/plain", coin.id);
+          });
+
+          if (!placedIn) {
+            pool.appendChild(btn);
+          } else {
+            placedCount++;
+            if (placedIn === "regular") regBox.appendChild(btn);
+            else irregBox.appendChild(btn);
+          }
+        });
+
+        document.getElementById("chestSortProgress").textContent = `Terisi: ${placedCount}/8`;
+      }
+
+      function placeCoinInChest(coinId, chestType) {
+        const coin = chestCoinsData.find((c) => c.id === coinId);
+        if (!coin) return;
+        const feedback = document.getElementById("chestSortFeedback");
+        feedback.classList.remove("hidden");
+
+        if (coin.type === chestType) {
+          chestPlacements[coinId] = chestType;
+          state.selectedCoinId = null;
+          playSfx("correct");
+          feedback.className = "p-3.5 rounded-2xl font-semibold text-sm bg-emerald-100 border-2 border-emerald-500 text-emerald-900";
+          feedback.innerHTML = `✅ <strong>Tepat sekali!</strong> Kata <em>"${coin.label}"</em> (dari Verb 1: <em>${coin.v1}</em>) masuk ke peti <strong>${chestType === "regular" ? "Regular Verbs (+ed)" : "Irregular Verbs"}</strong>!`;
+          renderChestSorting();
+
+          if (Object.keys(chestPlacements).length === chestCoinsData.length) {
+            addCoins(50, "Semua Koin Harta Tersortir!");
+          }
+        } else {
+          playSfx("wrong");
+          feedback.className = "p-3.5 rounded-2xl font-semibold text-sm bg-rose-100 border-2 border-rose-500 text-rose-900";
+          feedback.innerHTML = `⚠️ <strong>Kurang tepat, Kapten!</strong> Perhatikan akhiran kata <em>"${coin.label}"</em> (Verb 1: <em>${coin.v1}</em>). Apakah berakhiran <strong>-ed</strong> atau berubah bentuk unik? Coba peti sebelahnya!`;
+        }
+      }
+
+      document.querySelectorAll(".chest-dropzone").forEach((zone) => {
+        const chestType = zone.getAttribute("data-chest-type");
+        zone.addEventListener("click", () => {
+          if (state.selectedCoinId) {
+            placeCoinInChest(state.selectedCoinId, chestType);
+          } else {
+            showToast("👆", "Sentuh salah satu koin emas di atas terlebih dahulu, lalu sentuh peti ini!");
+          }
+        });
+        zone.addEventListener("dragover", (e) => e.preventDefault());
+        zone.addEventListener("drop", (e) => {
+          e.preventDefault();
+          const cid = e.dataTransfer.getData("text/plain") || state.selectedCoinId;
+          if (cid) placeCoinInChest(cid, chestType);
+        });
+      });
+
+      document.getElementById("btnResetChestSort").addEventListener("click", () => {
+        chestPlacements = {};
+        state.selectedCoinId = null;
+        document.getElementById("chestSortFeedback").classList.add("hidden");
+        playSfx("click");
+        renderChestSorting();
+      });
+
+      // Level 1 Tab 3: Sentence Builder (+, -, ?)
+      const builderQuestions = [
+        {
+          idx: 0,
+          typeLabel: "➕ Kalimat Positif (+)",
+          prompt: "Yesterday, Maya ___ delicious soup in the ship kitchen.",
+          indo: "Kemarin, Maya memasak sup lezat di dapur kapal.",
+          options: ["cook", "cooked", "cooking"],
+          correct: "cooked",
+          explain: "Kalimat positif (+) di masa lalu (Yesterday) menggunakan Verb 2: cooked."
+        },
+        {
+          idx: 1,
+          typeLabel: "➖ Kalimat Negatif (-)",
+          prompt: "We didn't ___ any sharks in the sea yesterday.",
+          indo: "Kami tidak melihat hiu di laut kemarin. (Ingat: setelah didn't kembali ke Verb 1!)",
+          options: ["saw", "see", "seen"],
+          correct: "see",
+          explain: "Hebat! Karena sudah ada 'didn't', kata kerjanya kembali ke Verb 1 murni yaitu 'see'."
+        },
+        {
+          idx: 2,
+          typeLabel: "❓ Kalimat Tanya (?)",
+          prompt: "Did you ___ to Treasure Island last week?",
+          indo: "Apakah kamu pergi ke Pulau Harta minggu lalu? (Ingat: ada Did di depan!)",
+          options: ["went", "go", "goes"],
+          correct: "go",
+          explain: "Betul sekali! Dalam kalimat tanya dengan 'Did', kata kerja kembali ke Verb 1 yaitu 'go'."
+        }
+      ];
+
+      function renderBuilderQuestions() {
+        const box = document.getElementById("builderQuestionsContainer");
+        box.innerHTML = builderQuestions.map((q) => {
+          const solved = state.builderSolved[q.idx];
+          return `
+            <div class="p-3.5 rounded-xl bg-slate-800 border-2 ${solved ? "border-emerald-400" : "border-slate-600"} space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-pirate font-bold text-amber-300">${q.typeLabel}</span>
+                <span class="text-xs font-bold ${solved ? "text-emerald-400" : "text-slate-400"}">${solved ? "✅ Benar!" : "Pilih kata yang tepat:"}</span>
+              </div>
+              <div class="font-pirate font-bold text-base sm:text-lg text-white">${q.prompt}</div>
+              <div class="text-xs text-sky-200">🇮🇩 ${q.indo}</div>
+              <div class="flex flex-wrap gap-2 pt-1">
+                ${q.options.map((opt) => `
+                  <button type="button" data-bq-idx="${q.idx}" data-bq-opt="${opt}"
+                    class="bq-opt-btn pirate-btn px-4 py-2 rounded-xl font-pirate font-bold text-sm ${
+                      solved && opt === q.correct
+                        ? "bg-emerald-500 text-slate-950"
+                        : "bg-amber-400 hover:bg-amber-300 text-amber-950"
+                    }">
+                    ${opt}
+                  </button>
+                `).join("")}
+              </div>
+              <div id="bqFeedback${q.idx}" class="${solved ? "" : "hidden"} text-xs text-emerald-300 pt-1">
+                ${solved ? "💡 " + q.explain : ""}
+              </div>
+            </div>
+          `;
+        }).join("");
+
+        box.querySelectorAll(".bq-opt-btn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const idx = Number(btn.getAttribute("data-bq-idx"));
+            const opt = btn.getAttribute("data-bq-opt");
+            const q = builderQuestions[idx];
+            const fb = document.getElementById("bqFeedback" + idx);
+            fb.classList.remove("hidden");
+
+            if (opt === q.correct) {
+              playSfx("correct");
+              if (!state.builderSolved[idx]) {
+                state.builderSolved[idx] = true;
+                addCoins(20, "Kalimat Kapten Benar!");
+              }
+              const solvedCount = Object.values(state.builderSolved).filter(Boolean).length;
+              document.getElementById("builderScoreBadge").textContent = `Selesai: ${solvedCount}/3`;
+              renderBuilderQuestions();
+            } else {
+              playSfx("wrong");
+              fb.className = "text-xs text-rose-300 pt-1";
+              fb.textContent = "⚠️ Belum tepat! Ingat aturan Verb 2 untuk (+), dan Verb 1 setelah 'didn't' atau 'Did'.";
+            }
+          });
+        });
+      }
+
+      // Level 1 Sub-tabs switching
+      function switchLvl1Tab(tabName) {
+        playSfx("click");
+        const tabs = {
+          timewheel: "lvl1TabTimewheel",
+          chestsort: "lvl1TabChestsort",
+          builder: "lvl1TabBuilder"
+        };
+        Object.entries(tabs).forEach(([k, id]) => {
+          document.getElementById(id).classList.toggle("hidden", k !== tabName);
+        });
+        document.querySelectorAll(".lvl1-tab-btn").forEach((btn) => {
+          const isMatch = btn.getAttribute("data-lvl1-tab") === tabName;
+          btn.className = `lvl1-tab-btn pirate-btn font-pirate font-bold px-3 py-2 rounded-xl text-xs sm:text-sm ${
+            isMatch ? "bg-amber-600 text-white" : "bg-amber-200 text-amber-950"
+          }`;
+        });
+      }
+
+      document.querySelectorAll(".lvl1-tab-btn").forEach((btn) => {
+        btn.addEventListener("click", () => switchLvl1Tab(btn.getAttribute("data-lvl1-tab")));
+      });
+      document.getElementById("btnToLvl1Tab2").addEventListener("click", () => switchLvl1Tab("chestsort"));
+      document.getElementById("btnToLvl1Tab3").addEventListener("click", () => switchLvl1Tab("builder"));
+      document.getElementById("btnCompleteLevel1").addEventListener("click", () => {
+        markLevelCompleted(1);
+        showScreen("level2");
+      });
+
+      // ------------------------------
+      // 6. LEVEL 2: RECOUNT SCROLL ISLAND
+      // ------------------------------
+      const scratchCanvas = document.getElementById("scratchCanvas");
+      const scratchCtx = scratchCanvas.getContext("2d");
+      let isScratching = false;
+
+      function initScratchCanvas() {
+        if (state.scratchCleared) {
+          scratchCanvas.classList.add("hidden");
+          return;
+        }
+        const parent = scratchCanvas.parentElement;
+        const rect = parent.getBoundingClientRect();
+        if (rect.width === 0) return;
+        scratchCanvas.width = rect.width;
+        scratchCanvas.height = rect.height;
+
+        // Draw golden beach sand overlay
+        const grad = scratchCtx.createLinearGradient(0, 0, scratchCanvas.width, scratchCanvas.height);
+        grad.addColorStop(0, "#d97706");
+        grad.addColorStop(0.5, "#f59e0b");
+        grad.addColorStop(1, "#b45309");
+        scratchCtx.globalCompositeOperation = "source-over";
+        scratchCtx.fillStyle = grad;
+        scratchCtx.fillRect(0, 0, scratchCanvas.width, scratchCanvas.height);
+
+        // Sand dots pattern & instruction
+        scratchCtx.fillStyle = "#fef3c7";
+        scratchCtx.font = "bold 20px Fredoka, sans-serif";
+        scratchCtx.textAlign = "center";
+        scratchCtx.fillText("🖐️ GOSOK PASIR INI DENGAN JARIMU / MOUSE!", scratchCanvas.width / 2, scratchCanvas.height / 2 - 10);
+        scratchCtx.font = "14px Inter, sans-serif";
+        scratchCtx.fillText("(Atau klik tombol 'Buka Semua Pasir' di kanan atas)", scratchCanvas.width / 2, scratchCanvas.height / 2 + 20);
+      }
+
+      function scratchAt(clientX, clientY) {
+        if (state.scratchCleared) return;
+        const rect = scratchCanvas.getBoundingClientRect();
+        const x = clientX - rect.left;
+        const y = clientY - rect.top;
+        scratchCtx.globalCompositeOperation = "destination-out";
+        scratchCtx.beginPath();
+        scratchCtx.arc(x, y, 36, 0, Math.PI * 2);
+        scratchCtx.fill();
+        updateScratchProgress();
+      }
+
+      function updateScratchProgress() {
+        try {
+          const imgData = scratchCtx.getImageData(0, 0, scratchCanvas.width, scratchCanvas.height).data;
+          let transparentPixels = 0;
+          const totalSample = imgData.length / 16;
+          for (let i = 3; i < imgData.length; i += 16) {
+            if (imgData[i] < 128) transparentPixels++;
+          }
+          const pct = Math.min(100, Math.round((transparentPixels / totalSample) * 100));
+          document.getElementById("scratchPercentBadge").textContent = `Terbuka: ${pct}%`;
+          if (pct >= 55 && !state.scratchCleared) {
+            clearSandCompletely();
+          }
+        } catch (e) {}
+      }
+
+      function clearSandCompletely() {
+        state.scratchCleared = true;
+        scratchCanvas.classList.add("hidden");
+        document.getElementById("scratchPercentBadge").textContent = "Terbuka: 100% ✨";
+        addCoins(30, "Gulungan Recount Terbuka!");
+      }
+
+      scratchCanvas.addEventListener("mousedown", (e) => {
+        isScratching = true;
+        scratchAt(e.clientX, e.clientY);
+      });
+      scratchCanvas.addEventListener("mousemove", (e) => {
+        if (isScratching) scratchAt(e.clientX, e.clientY);
+      });
+      window.addEventListener("mouseup", () => {
+        isScratching = false;
+      });
+      scratchCanvas.addEventListener("touchstart", (e) => {
+        isScratching = true;
+        if (e.touches[0]) scratchAt(e.touches[0].clientX, e.touches[0].clientY);
+      }, { passive: true });
+      scratchCanvas.addEventListener("touchmove", (e) => {
+        if (isScratching && e.touches[0]) scratchAt(e.touches[0].clientX, e.touches[0].clientY);
+      }, { passive: true });
+      scratchCanvas.addEventListener("touchend", () => {
+        isScratching = false;
+      });
+
+      document.getElementById("btnClearSand").addEventListener("click", () => {
+        if (!state.scratchCleared) clearSandCompletely();
+      });
+
+      // Level 2 Tab 2: Story Order Sequencer
+      let storyCardsOrder = [
+        {
+          correctPos: 2,
+          tag: "Bagian ?",
+          structure: "EVENT 1 (Kejadian Pertama)",
+          en: "First, we sailed on a big boat and saw three dolphins.",
+          id: "Pertama, kami berlayar di perahu besar dan melihat tiga lumba-lumba."
+        },
+        {
+          correctPos: 1,
+          tag: "Bagian ?",
+          structure: "ORIENTATION (Pembuka: Kapan, Siapa, Di mana)",
+          en: "Last holiday, my family and I went to Dolphin Bay.",
+          id: "Liburan lalu, keluargaku dan aku pergi ke Teluk Lumba-lumba."
+        },
+        {
+          correctPos: 4,
+          tag: "Bagian ?",
+          structure: "RE-ORIENTATION (Penutup & Perasaan)",
+          en: "Finally, we went home at 4 PM. We were very happy!",
+          id: "Akhirnya, kami pulang pukul 4 sore. Kami sangat senang!"
+        },
+        {
+          correctPos: 3,
+          tag: "Bagian ?",
+          structure: "EVENT 2 (Kejadian Selanjutnya)",
+          en: "After that, we ate grilled fish and drank coconut water on the beach.",
+          id: "Setelah itu, kami makan ikan bakar dan minum air kelapa di pantai."
+        }
+      ];
+      let selectedSwapIdx = null;
+
+      function renderStoryOrder() {
+        const list = document.getElementById("storyOrderList");
+        const slotLabels = [
+          "Slot 1: ORIENTATION (Pembuka)",
+          "Slot 2: EVENT 1 (Kejadian Pertama)",
+          "Slot 3: EVENT 2 (Kejadian Kedua)",
+          "Slot 4: RE-ORIENTATION (Penutup)"
+        ];
+        list.innerHTML = storyCardsOrder.map((card, idx) => {
+          const isSelected = selectedSwapIdx === idx;
+          return `
+            <div data-order-idx="${idx}" class="story-order-card cursor-pointer p-3.5 rounded-2xl border-3 transition flex flex-wrap items-center justify-between gap-2 ${
+              isSelected ? "bg-amber-200 border-amber-700 ring-4 ring-amber-400" : "bg-white border-amber-400 hover:bg-amber-50"
+            }">
+              <div class="space-y-1 max-w-xl">
+                <div class="flex items-center gap-2">
+                  <span class="bg-amber-800 text-amber-100 font-pirate font-bold text-xs px-2.5 py-0.5 rounded-full">
+                    ${slotLabels[idx]}
+                  </span>
+                  <span class="text-[11px] text-amber-700 font-semibold">(Sentuh 2 kartu untuk tukar posisi)</span>
+                </div>
+                <p class="font-pirate font-bold text-sm sm:text-base text-slate-900">"${card.en}"</p>
+                <p class="text-xs text-slate-600">🇮🇩 ${card.id}</p>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <button type="button" data-move-up="${idx}" class="move-up-btn pirate-btn bg-amber-500 hover:bg-amber-400 text-amber-950 font-pirate font-bold px-3 py-2 rounded-xl text-xs" ${idx === 0 ? "disabled style='opacity:0.4'" : ""}>
+                  ⬆️ Naik
+                </button>
+                <button type="button" data-move-down="${idx}" class="move-down-btn pirate-btn bg-amber-500 hover:bg-amber-400 text-amber-950 font-pirate font-bold px-3 py-2 rounded-xl text-xs" ${idx === storyCardsOrder.length - 1 ? "disabled style='opacity:0.4'" : ""}>
+                  ⬇️ Turun
+                </button>
+              </div>
+            </div>
+          `;
+        }).join("");
+
+        list.querySelectorAll(".move-up-btn").forEach((btn) => {
+          btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const i = Number(btn.getAttribute("data-move-up"));
+            if (i > 0) {
+              const tmp = storyCardsOrder[i - 1];
+              storyCardsOrder[i - 1] = storyCardsOrder[i];
+              storyCardsOrder[i] = tmp;
+              selectedSwapIdx = null;
+              playSfx("click");
+              renderStoryOrder();
+            }
+          });
+        });
+
+        list.querySelectorAll(".move-down-btn").forEach((btn) => {
+          btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const i = Number(btn.getAttribute("data-move-down"));
+            if (i < storyCardsOrder.length - 1) {
+              const tmp = storyCardsOrder[i + 1];
+              storyCardsOrder[i + 1] = storyCardsOrder[i];
+              storyCardsOrder[i] = tmp;
+              selectedSwapIdx = null;
+              playSfx("click");
+              renderStoryOrder();
+            }
+          });
+        });
+
+        list.querySelectorAll(".story-order-card").forEach((cardEl) => {
+          cardEl.addEventListener("click", () => {
+            const i = Number(cardEl.getAttribute("data-order-idx"));
+            playSfx("click");
+            if (selectedSwapIdx === null) {
+              selectedSwapIdx = i;
+            } else if (selectedSwapIdx === i) {
+              selectedSwapIdx = null;
+            } else {
+              const tmp = storyCardsOrder[selectedSwapIdx];
+              storyCardsOrder[selectedSwapIdx] = storyCardsOrder[i];
+              storyCardsOrder[i] = tmp;
+              selectedSwapIdx = null;
+            }
+            renderStoryOrder();
+          });
+        });
+      }
+
+      document.getElementById("btnCheckStoryOrder").addEventListener("click", () => {
+        const isCorrect = storyCardsOrder.every((c, i) => c.correctPos === i + 1);
+        const fb = document.getElementById("storyOrderFeedback");
+        fb.classList.remove("hidden");
+        if (isCorrect) {
+          playSfx("fanfare");
+          fb.className = "p-4 rounded-2xl font-semibold text-sm bg-emerald-100 border-2 border-emerald-600 text-emerald-950";
+          fb.innerHTML = "🎉 <strong>Luar Biasa, Kapten!</strong> Urutan Recount Text sudah sempurna: <em>Orientation (Last holiday...) ➔ Event 1 (First...) ➔ Event 2 (After that...) ➔ Re-orientation (Finally...)</em>!";
+          addCoins(60, "Puzzle Urutan Recount Benar!");
+        } else {
+          playSfx("wrong");
+          fb.className = "p-4 rounded-2xl font-semibold text-sm bg-rose-100 border-2 border-rose-500 text-rose-950";
+          fb.innerHTML = "🧭 <strong>Hampir tepat!</strong> Petunjuk: <strong>Slot 1 (Orientation)</strong> harus dimulai dengan waktu & tempat (<em>Last holiday...</em>), diikuti <strong>First...</strong>, lalu <strong>After that...</strong>, dan ditutup dengan <strong>Finally...</strong>!";
+        }
+      });
+
+      function switchLvl2Tab(tabName) {
+        playSfx("click");
+        document.getElementById("lvl2TabScratch").classList.toggle("hidden", tabName !== "scratch");
+        document.getElementById("lvl2TabOrder").classList.toggle("hidden", tabName !== "order");
+        document.querySelectorAll(".lvl2-tab-btn").forEach((btn) => {
+          const isMatch = btn.getAttribute("data-lvl2-tab") === tabName;
+          btn.className = `lvl2-tab-btn pirate-btn font-pirate font-bold px-3 py-2 rounded-xl text-xs sm:text-sm ${
+            isMatch ? "bg-emerald-700 text-white" : "bg-amber-200 text-amber-950"
+          }`;
+        });
+      }
+
+      document.querySelectorAll(".lvl2-tab-btn").forEach((btn) => {
+        btn.addEventListener("click", () => switchLvl2Tab(btn.getAttribute("data-lvl2-tab")));
+      });
+      document.getElementById("btnToLvl2Tab2").addEventListener("click", () => switchLvl2Tab("order"));
+      document.getElementById("btnCompleteLevel2").addEventListener("click", () => {
+        markLevelCompleted(2);
+        showScreen("level3");
+      });
+
+      // ------------------------------
+      // 7. LEVEL 3: CANNON BATTLE QUIZ
+      // ------------------------------
+      const cannonQuestions = [
+        {
+          hint: "Regular Verb (+ed)",
+          q: "Yesterday, Captain Jack and his crew ___ the wooden ship.",
+          indo: "Kemarin, Kapten Jack dan krunya membersihkan kapal kayu itu.",
+          options: ["clean", "cleaned", "cleaning", "cleans"],
+          correct: 1,
+          explain: "'Yesterday' menunjukkan masa lalu (Past Tense), jadi 'clean' ditambah -ed menjadi 'cleaned'."
+        },
+        {
+          hint: "Irregular Verb (Verb 2)",
+          q: "Last Sunday, we ___ to Treasure Island by boat.",
+          indo: "Minggu lalu, kami pergi ke Pulau Harta naik perahu.",
+          options: ["go", "goed", "went", "going"],
+          correct: 2,
+          explain: "Bentuk Verb 2 (Past Tense) dari 'go' adalah 'went' (Irregular Verb)."
+        },
+        {
+          hint: "Kalimat Negatif (didn't + Verb 1)",
+          q: "Sinta didn't ___ breakfast this morning because she woke up late.",
+          indo: "Sinta tidak makan sarapan tadi pagi karena bangun kesiangan.",
+          options: ["eat", "ate", "eaten", "eating"],
+          correct: 0,
+          explain: "Setelah kata 'didn't', kata kerja kembali ke bentuk dasar (Verb 1) yaitu 'eat'!"
+        },
+        {
+          hint: "Kalimat Tanya (Did + S + Verb 1?)",
+          q: "___ you see the rainbow over the sea yesterday?",
+          indo: "Apakah kamu melihat pelangi di atas laut kemarin?",
+          options: ["Do", "Are", "Did", "Were"],
+          correct: 2,
+          explain: "Untuk kalimat tanya masa lalu (yesterday) dengan kata kerja 'see', gunakan 'Did' di awal kalimat."
+        },
+        {
+          hint: "Time Signal (Keterangan Waktu Lampau)",
+          q: "My brother bought a new dictionary two days ___.",
+          indo: "Kakakku membeli kamus baru dua hari yang lalu.",
+          options: ["tomorrow", "ago", "now", "every day"],
+          correct: 1,
+          explain: "'Two days ago' berarti dua hari yang lalu (penanda waktu Simple Past Tense)."
+        },
+        {
+          hint: "Irregular Verb & Struktur Recount",
+          q: "Finally, we ___ home in the evening. We felt very happy!",
+          indo: "Akhirnya, kami pulang di sore hari. Kami merasa sangat senang!",
+          options: ["come", "came", "coming", "comes"],
+          correct: 1,
+          explain: "Verb 2 dari 'come' adalah 'came', dan 'Finally...' adalah bagian Re-orientation (penutup)."
+        }
+      ];
+
+      const cannonCanvas = document.getElementById("cannonCanvas");
+      const cannonCtx = cannonCanvas.getContext("2d");
+      let cannonAnimBall = null;
+      let explosionParticles = [];
+
+      function resizeCannonCanvas() {
+        const rect = cannonCanvas.parentElement.getBoundingClientRect();
+        if (rect.width === 0) return;
+        cannonCanvas.width = rect.width;
+        cannonCanvas.height = rect.height;
+      }
+
+      function fireCannonAnimation(isHit) {
+        const w = cannonCanvas.width;
+        const h = cannonCanvas.height;
+        cannonAnimBall = {
+          x: w * 0.18,
+          y: h * 0.62,
+          vx: (w * 0.62) / 28,
+          vy: -6.5,
+          gravity: 0.42,
+          isHit: isHit
+        };
+        playSfx("cannon");
+      }
+
+      function drawCannonScene() {
+        if (state.currentScreen === "level3" && cannonCanvas.width > 0) {
+          const w = cannonCanvas.width;
+          const h = cannonCanvas.height;
+          cannonCtx.clearRect(0, 0, w, h);
+
+          // Sky & Sea
+          const skyGrad = cannonCtx.createLinearGradient(0, 0, 0, h * 0.7);
+          skyGrad.addColorStop(0, "#0f172a");
+          skyGrad.addColorStop(1, "#0284c7");
+          cannonCtx.fillStyle = skyGrad;
+          cannonCtx.fillRect(0, 0, w, h * 0.72);
+
+          cannonCtx.fillStyle = "#0369a1";
+          cannonCtx.fillRect(0, h * 0.72, w, h * 0.28);
+
+          // Player Ship (Left)
+          const sx = w * 0.15;
+          const sy = h * 0.68;
+          cannonCtx.fillStyle = "#78350f";
+          cannonCtx.beginPath();
+          cannonCtx.moveTo(sx - 40, sy - 10);
+          cannonCtx.lineTo(sx + 40, sy - 10);
+          cannonCtx.lineTo(sx + 26, sy + 14);
+          cannonCtx.lineTo(sx - 26, sy + 14);
+          cannonCtx.closePath();
+          cannonCtx.fill();
+
+          // Cannon barrel on player ship
+          cannonCtx.fillStyle = "#334155";
+          cannonCtx.fillRect(sx + 18, sy - 20, 24, 10);
+
+          // Player Sail
+          cannonCtx.fillStyle = "#fef3c7";
+          cannonCtx.beginPath();
+          cannonCtx.moveTo(sx, sy - 58);
+          cannonCtx.lineTo(sx + 28, sy - 14);
+          cannonCtx.lineTo(sx - 22, sy - 14);
+          cannonCtx.closePath();
+          cannonCtx.fill();
+
+          // Target Pirate Ship (Right)
+          const tx = w * 0.8;
+          const ty = h * 0.68;
+          cannonCtx.fillStyle = "#451a03";
+          cannonCtx.beginPath();
+          cannonCtx.moveTo(tx - 42, ty - 10);
+          cannonCtx.lineTo(tx + 42, ty - 10);
+          cannonCtx.lineTo(tx + 28, ty + 14);
+          cannonCtx.lineTo(tx - 28, ty + 14);
+          cannonCtx.closePath();
+          cannonCtx.fill();
+
+          // Target Sail
+          cannonCtx.fillStyle = "#fca5a5";
+          cannonCtx.beginPath();
+          cannonCtx.moveTo(tx, ty - 58);
+          cannonCtx.lineTo(tx + 26, ty - 14);
+          cannonCtx.lineTo(tx - 26, ty - 14);
+          cannonCtx.closePath();
+          cannonCtx.fill();
+          cannonCtx.font = "20px sans-serif";
+          cannonCtx.textAlign = "center";
+          cannonCtx.fillText("🎯", tx, ty - 28);
+
+          // Cannonball projectile
+          if (cannonAnimBall) {
+            cannonAnimBall.x += cannonAnimBall.vx;
+            cannonAnimBall.y += cannonAnimBall.vy;
+            cannonAnimBall.vy += cannonAnimBall.gravity;
+
+            cannonCtx.beginPath();
+            cannonCtx.arc(cannonAnimBall.x, cannonAnimBall.y, 7, 0, Math.PI * 2);
+            cannonCtx.fillStyle = "#fbbf24";
+            cannonCtx.fill();
+
+            if (cannonAnimBall.x >= tx - 10) {
+              // Trigger explosion particles
+              for (let i = 0; i < 18; i++) {
+                explosionParticles.push({
+                  x: tx,
+                  y: ty - 20,
+                  vx: (Math.random() - 0.5) * 7,
+                  vy: (Math.random() - 0.5) * 7,
+                  life: 25,
+                  color: cannonAnimBall.isHit ? "#fbbf24" : "#94a3b8"
+                });
+              }
+              cannonAnimBall = null;
+            }
+          }
+
+          // Explosion particles
+          explosionParticles.forEach((p) => {
+            p.x += p.vx;
+            p.y += p.vy;
+            p.life--;
+            cannonCtx.fillStyle = p.color;
+            cannonCtx.beginPath();
+            cannonCtx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+            cannonCtx.fill();
+          });
+          explosionParticles = explosionParticles.filter((p) => p.life > 0);
+        }
+        requestAnimationFrame(drawCannonScene);
+      }
+      requestAnimationFrame(drawCannonScene);
+
+      function renderCannonQuestion() {
+        const quizBox = document.getElementById("cannonQuizBox");
+        const resultPanel = document.getElementById("cannonResultPanel");
+
+        if (state.cannonQIndex >= cannonQuestions.length) {
+          quizBox.classList.add("hidden");
+          resultPanel.classList.remove("hidden");
+          markLevelCompleted(3);
+          document.getElementById("cannonFinalSummary").textContent =
+            `Kapten ${state.studentName} berhasil menembak tepat sasaran ${state.cannonScore} dari ${cannonQuestions.length} soal Past Tense!`;
+          return;
+        }
+
+        quizBox.classList.remove("hidden");
+        resultPanel.classList.add("hidden");
+        state.cannonAnswered = false;
+
+        const qObj = cannonQuestions[state.cannonQIndex];
+        document.getElementById("cannonQProgress").textContent = `Soal ${state.cannonQIndex + 1} / ${cannonQuestions.length}`;
+        document.getElementById("cannonScoreText").textContent = `🎯 Skor Meriam: ${state.cannonScore}`;
+        document.getElementById("cannonQHint").textContent = `💡 Topik: ${qObj.hint}`;
+        document.getElementById("cannonQText").textContent = qObj.q;
+        document.getElementById("cannonQIndo").textContent = `🇮🇩 ${qObj.indo}`;
+        document.getElementById("cannonFeedbackBox").classList.add("hidden");
+
+        const grid = document.getElementById("cannonOptionsGrid");
+        const barrelIcons = ["🛢️ A", "🛢️ B", "🛢️ C", "🛢️ D"];
+        grid.innerHTML = qObj.options.map((opt, idx) => `
+          <button type="button" data-copt-idx="${idx}"
+            class="cannon-opt-btn pirate-btn p-3.5 rounded-2xl border-3 border-amber-700 bg-white hover:bg-amber-200 text-left flex items-center justify-between transition">
+            <div class="flex items-center gap-2.5">
+              <span class="bg-amber-800 text-amber-100 font-pirate font-bold text-xs px-2.5 py-1 rounded-lg">${barrelIcons[idx]}</span>
+              <span class="font-pirate font-bold text-base sm:text-lg text-slate-900">${opt}</span>
+            </div>
+            <span class="text-xs font-semibold text-amber-800">💣 Tembak!</span>
+          </button>
+        `).join("");
+
+        grid.querySelectorAll(".cannon-opt-btn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            if (state.cannonAnswered) return;
+            state.cannonAnswered = true;
+            const chosenIdx = Number(btn.getAttribute("data-copt-idx"));
+            const isCorrect = chosenIdx === qObj.correct;
+
+            fireCannonAnimation(isCorrect);
+
+            const fbBox = document.getElementById("cannonFeedbackBox");
+            const fbText = document.getElementById("cannonFeedbackText");
+            fbBox.classList.remove("hidden");
+
+            if (isCorrect) {
+              state.cannonScore++;
+              addCoins(25, "Tembakan Meriam Tepat!");
+              btn.classList.replace("bg-white", "bg-emerald-200");
+              btn.classList.replace("border-amber-700", "border-emerald-600");
+              fbBox.className = "p-4 rounded-2xl border-2 bg-emerald-100 border-emerald-600 text-emerald-950 flex flex-wrap items-center justify-between gap-3";
+              fbText.innerHTML = `🎯 <strong>BOOM! Tepat Sasaran!</strong> ${qObj.explain}`;
+            } else {
+              playSfx("wrong");
+              btn.classList.replace("bg-white", "bg-rose-200");
+              btn.classList.replace("border-amber-700", "border-rose-600");
+              fbBox.className = "p-4 rounded-2xl border-2 bg-rose-100 border-rose-600 text-rose-950 flex flex-wrap items-center justify-between gap-3";
+              fbText.innerHTML = `💦 <strong>Meleset!</strong> Jawaban yang tepat adalah <strong>"${qObj.options[qObj.correct]}"</strong>. ${qObj.explain}`;
+            }
+            document.getElementById("cannonScoreText").textContent = `🎯 Skor Meriam: ${state.cannonScore}`;
+          });
+        });
+      }
+
+      document.getElementById("btnSpeakCannonQ").addEventListener("click", () => {
+        const qObj = cannonQuestions[state.cannonQIndex];
+        if (qObj) speakEnglish(qObj.q.replace("___", "blank"));
+      });
+
+      document.getElementById("btnNextCannonQ").addEventListener("click", () => {
+        playSfx("click");
+        state.cannonQIndex++;
+        renderCannonQuestion();
+      });
+
+      document.getElementById("btnRetryCannon").addEventListener("click", () => {
+        playSfx("click");
+        state.cannonQIndex = 0;
+        state.cannonScore = 0;
+        renderCannonQuestion();
+      });
+
+      // ------------------------------
+      // 8. LEVEL 4: KRAKEN'S STORY ESCAPE
+      // ------------------------------
+      const bridgeChallenges = [
+        {
+          indo: "Kemarin kami pergi ke pantai.",
+          words: ["Yesterday", "we", "went", "to", "the", "beach."],
+          scrambled: ["the", "went", "Yesterday", "beach.", "we", "to"]
+        },
+        {
+          indo: "Dia (perempuan) menemukan sebuah koin emas.",
+          words: ["She", "found", "a", "gold", "coin."],
+          scrambled: ["gold", "She", "coin.", "a", "found"]
+        },
+        {
+          indo: "Mereka tidak melihat hiu itu kemarin.",
+          words: ["They", "didn't", "see", "the", "shark", "yesterday."],
+          scrambled: ["see", "They", "yesterday.", "shark", "didn't", "the"]
+        }
+      ];
+
+      function initBridgeChallenge() {
+        const ch = bridgeChallenges[state.bridgeIndex];
+        state.bridgeSelectedWords = [];
+        document.getElementById("bridgeProgressBadge").textContent = `Jembatan ${state.bridgeIndex + 1} / ${bridgeChallenges.length}`;
+        document.getElementById("bridgeClueIndo").textContent = `🇮🇩 Arti Kalimat: "${ch.indo}"`;
+        document.getElementById("bridgeFeedback").classList.add("hidden");
+        document.getElementById("btnNextBridge").classList.add("hidden");
+        renderBridgePlanks();
+      }
+
+      function renderBridgePlanks() {
+        const ch = bridgeChallenges[state.bridgeIndex];
+        const slot = document.getElementById("bridgeSlot");
+        const pool = document.getElementById("bridgePool");
+
+        slot.innerHTML = state.bridgeSelectedWords.map((item, sIdx) => `
+          <button type="button" data-remove-idx="${sIdx}"
+            class="pirate-btn bg-amber-400 hover:bg-amber-300 text-amber-950 font-pirate font-bold px-3.5 py-2 rounded-xl border-2 border-amber-800 text-sm">
+            ${item.word}
+          </button>
+        `).join("");
+
+        const usedIndices = new Set(state.bridgeSelectedWords.map((i) => i.poolIdx));
+        pool.innerHTML = ch.scrambled.map((w, pIdx) => {
+          if (usedIndices.has(pIdx)) return "";
+          return `
+            <button type="button" data-pool-idx="${pIdx}"
+              class="pirate-btn bg-purple-300 hover:bg-purple-200 text-purple-950 font-pirate font-bold px-3.5 py-2 rounded-xl border-2 border-purple-700 text-sm">
+              ${w}
+            </button>
+          `;
+        }).join("");
+
+        slot.querySelectorAll("[data-remove-idx]").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const rIdx = Number(btn.getAttribute("data-remove-idx"));
+            state.bridgeSelectedWords.splice(rIdx, 1);
+            playSfx("click");
+            renderBridgePlanks();
+          });
+        });
+
+        pool.querySelectorAll("[data-pool-idx]").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const pIdx = Number(btn.getAttribute("data-pool-idx"));
+            state.bridgeSelectedWords.push({ poolIdx: pIdx, word: ch.scrambled[pIdx] });
+            playSfx("click");
+            renderBridgePlanks();
+          });
+        });
+      }
+
+      document.getElementById("btnResetBridgeWords").addEventListener("click", () => {
+        playSfx("click");
+        state.bridgeSelectedWords = [];
+        renderBridgePlanks();
+      });
+
+      document.getElementById("btnCheckBridge").addEventListener("click", () => {
+        const ch = bridgeChallenges[state.bridgeIndex];
+        const userSentence = state.bridgeSelectedWords.map((i) => i.word).join(" ");
+        const targetSentence = ch.words.join(" ");
+        const fb = document.getElementById("bridgeFeedback");
+        fb.classList.remove("hidden");
+
+        if (userSentence === targetSentence) {
+          playSfx("correct");
+          speakEnglish(targetSentence);
+          addCoins(30, "Jembatan Kata Kokoh!");
+          fb.className = "p-3.5 rounded-xl text-sm font-semibold bg-emerald-900 border-2 border-emerald-400 text-emerald-100";
+          fb.innerHTML = `✅ <strong>Jembatan Tersambung!</strong> Kalimatmu tepat: <em>"${targetSentence}"</em>`;
+
+          if (state.bridgeIndex < bridgeChallenges.length - 1) {
+            document.getElementById("btnNextBridge").classList.remove("hidden");
+          } else {
+            fb.innerHTML += ` <br/>🎉 Semua 3 Jembatan selesai! Klik tab <strong>Bagian B: Detektif Cerita</strong> di atas!`;
+          }
+        } else {
+          playSfx("wrong");
+          fb.className = "p-3.5 rounded-xl text-sm font-semibold bg-rose-900 border-2 border-rose-400 text-rose-100";
+          fb.innerHTML = `⚠️ <strong>Jembatan masih goyang!</strong> Pastikan semua papan kata terpakai dan urutannya mulai dari Subjek/Waktu: <em>"${ch.words[0]} ${ch.words[1]}..."</em>`;
+        }
+      });
+
+      document.getElementById("btnNextBridge").addEventListener("click", () => {
+        playSfx("click");
+        state.bridgeIndex++;
+        initBridgeChallenge();
+      });
+
+      // Level 4 Part B: Reading Detective Questions
+      const detectiveQuestions = [
+        {
+          id: "dq1",
+          q: "1. Where did Riko and his sister go last Saturday? (Orientation)",
+          indo: "Ke mana Riko dan kakaknya pergi hari Sabtu lalu?",
+          options: ["To the Sea Museum in Surabaya", "To the mountain", "To school"],
+          correct: 0
+        },
+        {
+          id: "dq2",
+          q: "2. What did they see inside the museum? (Events)",
+          indo: "Apa yang mereka lihat di dalam museum?",
+          options: ["Three lions and a tiger", "A giant whale skeleton and cute turtles", "A big pirate ship"],
+          correct: 1
+        },
+        {
+          id: "dq3",
+          q: "3. What did they eat for lunch? (Events)",
+          indo: "Apa yang mereka makan untuk makan siang?",
+          options: ["Bread and milk", "Grilled fish", "Fried rice and orange juice"],
+          correct: 2
+        },
+        {
+          id: "dq4",
+          q: "4. How did they feel at the end of the trip? (Re-orientation)",
+          indo: "Bagaimana perasaan mereka di akhir perjalanan?",
+          options: ["They were very sad", "They were very happy", "They were angry"],
+          correct: 1
+        }
+      ];
+
+      function renderDetectiveQuestions() {
+        const container = document.getElementById("detectiveQuestionsList");
+        container.innerHTML = detectiveQuestions.map((dq) => {
+          const solved = state.detectiveSolved[dq.id];
+          return `
+            <div class="p-3.5 rounded-2xl border-2 ${solved ? "bg-emerald-50 border-emerald-500" : "bg-white border-amber-400"} space-y-2">
+              <div class="flex items-center justify-between">
+                <div class="font-pirate font-bold text-sm sm:text-base text-slate-900">${dq.q}</div>
+                <span class="text-xs font-bold ${solved ? "text-emerald-700" : "text-amber-700"}">${solved ? "✅ Tepat" : ""}</span>
+              </div>
+              <div class="text-xs text-slate-600">🇮🇩 ${dq.indo}</div>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
+                ${dq.options.map((opt, oIdx) => `
+                  <button type="button" data-dq-id="${dq.id}" data-dq-opt="${oIdx}"
+                    class="dq-opt-btn pirate-btn p-2 rounded-xl font-semibold text-xs border-2 ${
+                      solved && oIdx === dq.correct
+                        ? "bg-emerald-600 text-white border-emerald-800"
+                        : "bg-amber-100 hover:bg-amber-200 text-amber-950 border-amber-400"
+                    }">
+                    ${opt}
+                  </button>
+                `).join("")}
+              </div>
+            </div>
+          `;
+        }).join("");
+
+        container.querySelectorAll(".dq-opt-btn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const dqId = btn.getAttribute("data-dq-id");
+            const optIdx = Number(btn.getAttribute("data-dq-opt"));
+            const dq = detectiveQuestions.find((item) => item.id === dqId);
+            if (!dq) return;
+
+            if (optIdx === dq.correct) {
+              playSfx("correct");
+              if (!state.detectiveSolved[dqId]) {
+                state.detectiveSolved[dqId] = true;
+                addCoins(25, "Detektif Recount Benar!");
+              }
+              renderDetectiveQuestions();
+            } else {
+              playSfx("wrong");
+              showToast("🔍", "Coba baca kembali gulungan cerita Riko di sebelah kiri ya!");
+            }
+          });
+        });
+      }
+
+      function switchLvl4Tab(tabName) {
+        playSfx("click");
+        document.getElementById("lvl4TabBridge").classList.toggle("hidden", tabName !== "bridge");
+        document.getElementById("lvl4TabDetective").classList.toggle("hidden", tabName !== "detective");
+        document.querySelectorAll(".lvl4-tab-btn").forEach((btn) => {
+          const isMatch = btn.getAttribute("data-lvl4-tab") === tabName;
+          btn.className = `lvl4-tab-btn pirate-btn font-pirate font-bold px-3 py-2 rounded-xl text-xs sm:text-sm ${
+            isMatch ? "bg-purple-700 text-white" : "bg-amber-200 text-amber-950"
+          }`;
+        });
+      }
+
+      document.querySelectorAll(".lvl4-tab-btn").forEach((btn) => {
+        btn.addEventListener("click", () => switchLvl4Tab(btn.getAttribute("data-lvl4-tab")));
+      });
+
+      document.getElementById("btnCompleteLevel4").addEventListener("click", () => {
+        markLevelCompleted(4);
+        showScreen("level5");
+      });
+
+      // ------------------------------
+      // 9. LEVEL 5: REFLECTION & LOGBOOK
+      // ------------------------------
+      document.querySelectorAll(".mood-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          playSfx("click");
+          document.querySelectorAll(".mood-btn").forEach((b) => {
+            b.classList.remove("bg-amber-300", "border-amber-600");
+            b.classList.add("bg-white", "border-amber-300");
+          });
+          btn.classList.remove("bg-white", "border-amber-300");
+          btn.classList.add("bg-amber-300", "border-amber-600");
+          state.mood = btn.getAttribute("data-mood");
+          document.getElementById("certMoodText").textContent = state.mood;
+        });
+      });
+
+      function buildUserStoryText() {
+        const t = document.getElementById("storyTime").value;
+        const p = document.getElementById("storyPlace").value;
+        const w = document.getElementById("storyWith").value;
+        const e1 = document.getElementById("storyEvent1").value;
+        const e2 = document.getElementById("storyEvent2").value;
+        const f = document.getElementById("storyFeeling").value;
+        return `${t}, I went to ${p} with ${w}. First, we ${e1}. Then, we ${e2}. Finally, we went home in the afternoon. I felt ${f}!`;
+      }
+
+      function updateStoryPreview() {
+        const story = buildUserStoryText();
+        document.getElementById("certStoryPreview").textContent = `"${story}"`;
+      }
+
+      document.querySelectorAll(".story-select").forEach((sel) => {
+        sel.addEventListener("change", () => {
+          playSfx("click");
+          updateStoryPreview();
+        });
+      });
+
+      document.getElementById("btnSpeakMyStory").addEventListener("click", () => {
+        speakEnglish(buildUserStoryText());
+      });
+
+      // Signature Canvas
+      const signCanvas = document.getElementById("signCanvas");
+      const signCtx = signCanvas.getContext("2d");
+      let isSigning = false;
+      let signInitialized = false;
+
+      function initSignCanvas() {
+        const rect = signCanvas.parentElement.getBoundingClientRect();
+        if (rect.width === 0 || signInitialized) return;
+        signCanvas.width = rect.width;
+        signCanvas.height = rect.height;
+        signCtx.strokeStyle = "#1e293b";
+        signCtx.lineWidth = 3;
+        signCtx.lineCap = "round";
+        signInitialized = true;
+      }
+
+      function getSignPos(clientX, clientY) {
+        const rect = signCanvas.getBoundingClientRect();
+        return { x: clientX - rect.left, y: clientY - rect.top };
+      }
+
+      signCanvas.addEventListener("mousedown", (e) => {
+        isSigning = true;
+        const pos = getSignPos(e.clientX, e.clientY);
+        signCtx.beginPath();
+        signCtx.moveTo(pos.x, pos.y);
+      });
+      signCanvas.addEventListener("mousemove", (e) => {
+        if (!isSigning) return;
+        const pos = getSignPos(e.clientX, e.clientY);
+        signCtx.lineTo(pos.x, pos.y);
+        signCtx.stroke();
+      });
+      window.addEventListener("mouseup", () => {
+        isSigning = false;
+      });
+      signCanvas.addEventListener("touchstart", (e) => {
+        isSigning = true;
+        if (e.touches[0]) {
+          const pos = getSignPos(e.touches[0].clientX, e.touches[0].clientY);
+          signCtx.beginPath();
+          signCtx.moveTo(pos.x, pos.y);
+        }
+      }, { passive: true });
+      signCanvas.addEventListener("touchmove", (e) => {
+        if (!isSigning || !e.touches[0]) return;
+        const pos = getSignPos(e.touches[0].clientX, e.touches[0].clientY);
+        signCtx.lineTo(pos.x, pos.y);
+        signCtx.stroke();
+      }, { passive: true });
+      signCanvas.addEventListener("touchend", () => {
+        isSigning = false;
+      });
+
+      document.getElementById("btnClearSign").addEventListener("click", () => {
+        playSfx("click");
+        signCtx.clearRect(0, 0, signCanvas.width, signCanvas.height);
+      });
+
+      document.getElementById("btnSaveReflection").addEventListener("click", () => {
+        if (!state.reflectionSaved) {
+          state.reflectionSaved = true;
+          addCoins(100, "Piala Kapten & Refleksi Disimpan!");
+        }
+        markLevelCompleted(5);
+        showToast("🏆", `Selamat Capt. ${state.studentName}! Kamu telah menamatkan Pirate Recount Quest!`);
+      });
+
+      // ------------------------------
+      // 10. GLOBAL HUD & MODAL CONTROLS
+      // ------------------------------
+      document.getElementById("btnMapHome").addEventListener("click", () => {
+        playSfx("click");
+        showScreen("map");
+      });
+
+      document.querySelectorAll("[data-goto-level]").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const lvl = btn.getAttribute("data-goto-level");
+          playSfx("click");
+          showScreen("level" + lvl);
+        });
+      });
+
+      document.querySelectorAll(".island-card").forEach((card) => {
+        card.addEventListener("click", () => {
+          const lvl = card.getAttribute("data-island");
+          playSfx("click");
+          showScreen("level" + lvl);
+        });
+      });
+
+      document.getElementById("btnToggleBgm").addEventListener("click", () => {
+        ensureAudio();
+        state.bgmEnabled = !state.bgmEnabled;
+        document.getElementById("bgmIcon").textContent = state.bgmEnabled ? "🎵" : "🔇";
+        document.getElementById("bgmLabel").textContent = state.bgmEnabled ? "BGM On" : "BGM Off";
+        if (state.bgmEnabled) {
+          playSfx("fanfare");
+          startBgm();
+          showToast("🎵", "Musik Bajak Laut Aktif!");
+        } else {
+          playSfx("click");
+          showToast("🔇", "Musik Latar Dimatikan");
+        }
+      });
+
+      document.getElementById("btnToggleSfx").addEventListener("click", () => {
+        state.sfxEnabled = !state.sfxEnabled;
+        document.getElementById("sfxIcon").textContent = state.sfxEnabled ? "🔊" : "🔈";
+        document.getElementById("sfxLabel").textContent = state.sfxEnabled ? "SFX On" : "SFX Off";
+        if (state.sfxEnabled) playSfx("coin");
+      });
+
+      document.getElementById("btnVocabModal").addEventListener("click", () => {
+        playSfx("click");
+        document.getElementById("modalVocab").classList.remove("hidden");
+      });
+      document.getElementById("btnCloseVocab").addEventListener("click", () => {
+        playSfx("click");
+        document.getElementById("modalVocab").classList.add("hidden");
+      });
+
+      // Delegate speak buttons
+      document.body.addEventListener("click", (e) => {
+        const speakBtn = e.target.closest(".speak-btn");
+        if (speakBtn) {
+          const text = speakBtn.getAttribute("data-speak");
+          if (text) speakEnglish(text);
+        }
+      });
+
+      // IFP Fullscreen & Classroom Zoom + On-Screen Touch Keyboard
+      function toggleIfpFullscreen() {
+        playSfx("click");
+        try {
+          if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(() => {});
+          } else {
+            document.exitFullscreen().catch(() => {});
+          }
+        } catch (e) {}
+      }
+
+      document.getElementById("btnFullscreen").addEventListener("click", toggleIfpFullscreen);
+      document.getElementById("btnLoginFullscreen").addEventListener("click", toggleIfpFullscreen);
+
+      let ifpLargeMode = true;
+      document.body.classList.add("ifp-large-text");
+      document.getElementById("btnIfpZoom").addEventListener("click", () => {
+        playSfx("click");
+        ifpLargeMode = !ifpLargeMode;
+        document.body.classList.toggle("ifp-large-text", ifpLargeMode);
+        document.getElementById("ifpZoomLabel").textContent = ifpLargeMode ? "Mode IFP+" : "Ukuran Normal";
+        showToast("🖥️", ifpLargeMode ? "Ukuran Teks Layar IFP Diperbesar!" : "Ukuran Teks Standar");
+      });
+
+      function initIfpTouchKeyboard() {
+        const kbBox = document.getElementById("ifpTouchKeyboard");
+        const keysContainer = document.getElementById("ifpKbKeys");
+        const nameInput = document.getElementById("inputStudentName");
+        const keys = [
+          "A","B","C","D","E","F","G","H","I","J","K","L","M",
+          "N","O","P","Q","R","S","T","U","V","W","X","Y","Z",
+          "SPASI","HAPUS","BERSIHKAN"
+        ];
+        keysContainer.innerHTML = keys.map((k) => {
+          const wide = k.length > 1 ? "px-3 bg-amber-400 text-amber-950" : "w-9 sm:w-10 bg-amber-100 text-amber-950";
+          return `<button type="button" data-kb-key="${k}" class="pirate-btn ${wide} h-9 sm:h-10 rounded-lg font-pirate font-bold text-xs sm:text-sm border border-amber-600">${k === "SPASI" ? "␣ Spasi" : k === "HAPUS" ? "⌫ Hapus" : k === "BERSIHKAN" ? "🗑️ Reset" : k}</button>`;
+        }).join("");
+
+        keysContainer.querySelectorAll("[data-kb-key]").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            playSfx("click");
+            const k = btn.getAttribute("data-kb-key");
+            if (k === "SPASI") {
+              if (nameInput.value.length < 35) nameInput.value += " ";
+            } else if (k === "HAPUS") {
+              nameInput.value = nameInput.value.slice(0, -1);
+            } else if (k === "BERSIHKAN") {
+              nameInput.value = "";
+            } else {
+              if (nameInput.value.length < 35) {
+                const shouldCap = nameInput.value.length === 0 || nameInput.value.endsWith(" ");
+                nameInput.value += shouldCap ? k : k.toLowerCase();
+              }
+            }
+          });
+        });
+
+        document.getElementById("btnToggleTouchKb").addEventListener("click", () => {
+          playSfx("click");
+          kbBox.classList.toggle("hidden");
+        });
+        document.getElementById("btnCloseTouchKb").addEventListener("click", () => {
+          playSfx("click");
+          kbBox.classList.add("hidden");
+        });
+      }
+
+      // Initialize all interactive views on load
+      function initApp() {
+        initIfpTouchKeyboard();
+        renderTimeWheel(0);
+        renderVerbFlipCards();
+        renderChestSorting();
+        renderBuilderQuestions();
+        renderStoryOrder();
+        renderCannonQuestion();
+        initBridgeChallenge();
+        renderDetectiveQuestions();
+        updateStoryPreview();
+      }
+
+      window.addEventListener("load", initApp);
+    })();
+  </script>
+</body>
+</html>
